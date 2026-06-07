@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { profile } from "./portfolio-data";
 
 const navLinks = [
   { name: "Profile", href: "#profile" },
@@ -13,7 +12,12 @@ const navLinks = [
   { name: "Contact", href: "#contact" },
 ];
 
-export function Navigation() {
+type Profile = {
+  email: string;
+  github: string;
+};
+
+export function Navigation({ profile: profileData }: { profile: Profile }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -66,7 +70,7 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <a href={profile.github} className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
+            <a href={profileData.github} className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
               GitHub
             </a>
             <Button
@@ -78,7 +82,7 @@ export function Navigation() {
                   : "bg-white/[0.08] hover:bg-white/[0.12] border-white/15 text-white px-6"
               }`}
             >
-              <a href={`mailto:${profile.email}`}>Email me</a>
+              <a href={`mailto:${profileData.email}`}>Email me</a>
             </Button>
           </div>
 
@@ -141,14 +145,14 @@ export function Navigation() {
               className="flex-1 rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <a href={profile.github}>GitHub</a>
+              <a href={profileData.github}>GitHub</a>
             </Button>
             <Button 
               asChild
               className="flex-1 bg-foreground/[0.06] hover:bg-foreground/[0.1] border border-foreground/15 text-foreground rounded-full h-14 text-base"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <a href={`mailto:${profile.email}`}>Email me</a>
+              <a href={`mailto:${profileData.email}`}>Email me</a>
             </Button>
           </div>
         </div>

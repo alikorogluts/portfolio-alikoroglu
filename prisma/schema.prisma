@@ -30,26 +30,62 @@ enum AuditAction {
   PASSWORD_CHANGE
   TWO_FACTOR_ENABLE
   TWO_FACTOR_DISABLE
+  TWO_FACTOR_ENABLED
+  TWO_FACTOR_DISABLED
+  TWO_FACTOR_SUCCESS
+  TWO_FACTOR_FAILED
+  BACKUP_CODE_USED
   PUBLISH
   UNPUBLISH
+  PROFILE_UPDATED
+  HERO_UPDATED
+  EXPERIENCE_CREATED
+  EXPERIENCE_UPDATED
+  EXPERIENCE_DELETED
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_DELETED
+  SKILL_CREATED
+  SKILL_UPDATED
+  SKILL_DELETED
+  HIGHLIGHT_CREATED
+  HIGHLIGHT_UPDATED
+  HIGHLIGHT_DELETED
+  MESSAGE_READ
+  MESSAGE_DELETED
+  SETTINGS_UPDATED
 }
 
 model AdminUser {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  name             String?
-  passwordHash     String
-  role             AdminRole @default(EDITOR)
-  isActive         Boolean   @default(true)
-  twoFactorEnabled Boolean   @default(false)
-  twoFactorSecret  String?
-  lastLoginAt      DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String?
+  passwordHash       String
+  role               AdminRole @default(EDITOR)
+  isActive           Boolean   @default(true)
+  twoFactorEnabled   Boolean   @default(false)
+  twoFactorSecret    String?
+  twoFactorEnabledAt DateTime?
+  lastLoginAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  sessions  AdminSession[]
-  loginLogs AdminLoginLog[]
-  auditLogs AdminAuditLog[]
+  sessions    AdminSession[]
+  loginLogs   AdminLoginLog[]
+  auditLogs   AdminAuditLog[]
+  backupCodes AdminBackupCode[]
+}
+
+model AdminBackupCode {
+  id        String    @id @default(cuid())
+  adminId   String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  admin AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
 }
 
 model AdminSession {
@@ -124,26 +160,67 @@ model PortfolioProfile {
   updatedAt    DateTime @updatedAt
 }
 
+model PortfolioHero {
+  id                String   @id @default(cuid())
+  headlinePrefix    String   @default("Ali Koroglu")
+  headlineTemplate  String   @default("systems that")
+  animatedWords     Json
+  description       String?
+  primaryCtaLabel   String?
+  primaryCtaHref    String?
+  secondaryCtaLabel String?
+  secondaryCtaHref  String?
+  currentBuilding   String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([isActive])
+}
+
 model PortfolioProject {
-  id          String   @id @default(cuid())
-  title       String
-  label       String?
-  description String
-  stack       String?
-  metric      String?
-  sortOrder   Int      @default(0)
-  isFeatured  Boolean  @default(false)
-  isPublished Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String
+  slug          String?
+  label         String?
+  description   String
+  stack         String?
+  metric        String?
+  githubUrl     String?
+  demoUrl       String?
+  coverImageUrl String?
+  sortOrder     Int      @default(0)
+  isFeatured    Boolean  @default(false)
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([sortOrder])
   @@index([isPublished])
+  @@index([slug])
+}
+
+model ContactMessage {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([isRead])
+  @@index([createdAt])
 }
 
 model PortfolioExperience {
   id          String   @id @default(cuid())
   title       String
+  company     String?
+  role        String?
+  dateRange   String?
   subtitle    String?
   description String
   sortOrder   Int      @default(0)

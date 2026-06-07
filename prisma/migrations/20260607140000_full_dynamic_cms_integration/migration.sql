@@ -1,0 +1,51 @@
+-- AlterEnum
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'PROFILE_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'HERO_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'EXPERIENCE_CREATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'EXPERIENCE_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'EXPERIENCE_DELETED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'PROJECT_CREATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'PROJECT_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'PROJECT_DELETED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'SKILL_CREATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'SKILL_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'SKILL_DELETED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'HIGHLIGHT_CREATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'HIGHLIGHT_UPDATED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'HIGHLIGHT_DELETED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'MESSAGE_READ';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'MESSAGE_DELETED';
+ALTER TYPE "AuditAction" ADD VALUE IF NOT EXISTS 'SETTINGS_UPDATED';
+
+-- AlterTable
+ALTER TABLE "PortfolioProject" ADD COLUMN "slug" TEXT;
+
+-- AlterTable
+ALTER TABLE "PortfolioExperience" ADD COLUMN "company" TEXT;
+ALTER TABLE "PortfolioExperience" ADD COLUMN "role" TEXT;
+ALTER TABLE "PortfolioExperience" ADD COLUMN "dateRange" TEXT;
+
+-- CreateTable
+CREATE TABLE "PortfolioHero" (
+    "id" TEXT NOT NULL,
+    "headlinePrefix" TEXT NOT NULL DEFAULT 'Ali Koroglu',
+    "headlineTemplate" TEXT NOT NULL DEFAULT 'systems that',
+    "animatedWords" JSONB NOT NULL,
+    "description" TEXT,
+    "primaryCtaLabel" TEXT,
+    "primaryCtaHref" TEXT,
+    "secondaryCtaLabel" TEXT,
+    "secondaryCtaHref" TEXT,
+    "currentBuilding" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PortfolioHero_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "PortfolioProject_slug_idx" ON "PortfolioProject"("slug");
+
+-- CreateIndex
+CREATE INDEX "PortfolioHero_isActive_idx" ON "PortfolioHero"("isActive");

@@ -3,10 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { profile } from "./portfolio-data";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
-export function CtaSection() {
+type Profile = {
+  email: string;
+  github: string;
+  cv: string;
+  location: string;
+};
+
+export function CtaSection({ profile: profileData }: { profile: Profile }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,6 +30,52 @@ export function CtaSection() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const values = {
+      name: String(formData.get("name") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      subject: String(formData.get("subject") ?? "").trim(),
+      message: String(formData.get("message") ?? "").trim(),
+    };
+    const errors: Record<string, string> = {};
+
+    if (values.name.length < 2) errors.name = "Name is required.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Enter a valid email.";
+    if (values.message.length < 10) errors.message = "Message must be at least 10 characters.";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setFormState("error");
+      return;
+    }
+
+    setFieldErrors({});
+    setFormState("submitting");
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...values,
+      }),
+    });
+
+    if (!response.ok) {
+      setFormState("error");
+      return;
+    }
+
+    form.reset();
+    setFormState("success");
+  }
+
+  const inputClass = (field: string) =>
+    `border-foreground/10 bg-black/30 text-foreground placeholder:text-muted-foreground ${
+      fieldErrors[field] ? "border-red-400/60 focus-visible:ring-red-400/30" : ""
+    }`;
 
   return (
     <section id="contact" ref={sectionRef} className="relative py-32 lg:py-40 overflow-hidden bg-black">
@@ -58,7 +114,7 @@ export function CtaSection() {
                     size="lg"
                     className="bg-foreground/[0.08] hover:bg-foreground/[0.12] border border-foreground/15 text-foreground px-8 h-14 text-base rounded-full group"
                   >
-                    <a href={`mailto:${profile.email}`}>
+                    <a href={`mailto:${profileData.email}`}>
                       Email me
                       <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </a>
@@ -69,7 +125,7 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/15 bg-foreground/[0.02] text-foreground hover:bg-foreground/[0.06]"
                   >
-                    <a href={profile.github}>View GitHub</a>
+                    <a href={profileData.github}>View GitHub</a>
                   </Button>
                   <Button
                     asChild
@@ -77,22 +133,69 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/15 bg-foreground/[0.02] text-foreground hover:bg-foreground/[0.06]"
                   >
-                    <a href={profile.cv}>Download CV</a>
+                    <a href={profileData.cv}>Download CV</a>
                   </Button>
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  {profile.email} · {profile.location}
+                  {profileData.email} · {profileData.location}
                 </p>
               </div>
 
               {/* Right image */}
-              <div className="hidden lg:col-span-6 lg:flex items-end justify-center h-[620px] -mr-16">
-                <img
-                  src="/images/bridge.png"
-                  alt="Two trees connected by glowing arcs"
-                  className="w-full h-full object-contain object-bottom"
-                />
+              <div className="lg:col-span-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="relative overflow-hidden border border-foreground/10 bg-foreground/[0.025] p-6 lg:p-8"
+                >
+                  <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#eca8d6]/10 blur-[70px]" />
+                  <div className="relative grid gap-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <Input
+                        name="name"
+                        placeholder="Name"
+                        aria-invalid={Boolean(fieldErrors.name)}
+                        className={inputClass("name")}
+                      />
+                      {fieldErrors.name ? <p className="text-xs text-red-300 sm:col-span-1">{fieldErrors.name}</p> : null}
+                      <Input
+                        name="email"
+                        type="email"
+                        placeholder="Email"
+                        aria-invalid={Boolean(fieldErrors.email)}
+                        className={inputClass("email")}
+                      />
+                      {fieldErrors.email ? <p className="text-xs text-red-300 sm:col-span-1">{fieldErrors.email}</p> : null}
+                    </div>
+                    <Input
+                      name="subject"
+                      placeholder="Subject (optional)"
+                      className={inputClass("subject")}
+                    />
+                    <Textarea
+                      name="message"
+                      placeholder="Message"
+                      aria-invalid={Boolean(fieldErrors.message)}
+                      className={`min-h-36 ${inputClass("message")}`}
+                    />
+                    {fieldErrors.message ? <p className="text-xs text-red-300">{fieldErrors.message}</p> : null}
+                    <Button
+                      type="submit"
+                      disabled={formState === "submitting"}
+                      size="lg"
+                      className="h-14 rounded-full border border-foreground/15 bg-foreground/[0.08] px-8 text-base text-foreground hover:bg-foreground/[0.12]"
+                    >
+                      {formState === "submitting" ? "Sending..." : "Send message"}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                    {formState === "success" ? (
+                      <p className="text-sm text-[#eca8d6]">Message sent successfully. I will get back to you soon.</p>
+                    ) : null}
+                    {formState === "error" ? (
+                      <p className="text-sm text-red-300">Could not send your message. Please check the required fields and try again.</p>
+                    ) : null}
+                  </div>
+                </form>
               </div>
             </div>
           </div>

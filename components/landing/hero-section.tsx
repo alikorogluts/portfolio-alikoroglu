@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { profile } from "./portfolio-data";
 
-const words = ["build", "ship", "detect", "scale"];
+const fallbackWords = ["build", "ship", "detect", "scale"];
 
 function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   const letters = word.split("");
@@ -105,9 +104,27 @@ function BlurWord({ word, trigger }: { word: string; trigger: number }) {
   );
 }
 
-export function HeroSection() {
+type Profile = {
+  name: string;
+  role: string;
+  subtitle: string;
+  summary: string;
+  stackLine: string;
+  availability: string;
+};
+
+type Hero = {
+  headlinePrefix: string;
+  headlineTemplate: string;
+  animatedWords: string[];
+  description: string;
+  currentBuilding: string;
+};
+
+export function HeroSection({ profile: profileData, hero }: { profile: Profile; hero?: Hero }) {
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
+  const words = hero?.animatedWords?.length ? hero.animatedWords : fallbackWords;
 
   useEffect(() => {
     setIsVisible(true);
@@ -175,7 +192,7 @@ export function HeroSection() {
         >
             <span className="inline-flex items-center gap-3 text-sm font-mono text-white/60">
               <span className="w-8 h-px bg-white/30" />
-              {profile.availability}
+              {profileData.availability}
             </span>
         </div>
         
@@ -186,9 +203,9 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block">Ali Koroglu</span>
+            <span className="block">{hero?.headlinePrefix ?? profileData.name}</span>
             <span className="block">
-              systems that{" "}
+              {hero?.headlineTemplate ?? "systems that"}{" "}
               <span className="relative inline-block">
                 <BlurWord word={words[wordIndex]} trigger={wordIndex} />
               </span>
@@ -201,10 +218,10 @@ export function HeroSection() {
           }`}
         >
           <p className="text-xl lg:text-2xl text-white/70 leading-relaxed mb-5">
-            {profile.role} | {profile.subtitle}. {profile.summary}
+            {hero?.description ?? `${profileData.role} | ${profileData.subtitle}. ${profileData.summary}`}
           </p>
           <p className="text-sm font-mono text-white/50 leading-relaxed">
-            {profile.stackLine}
+            {profileData.stackLine}
           </p>
         </div>
         </div>
@@ -218,7 +235,7 @@ export function HeroSection() {
       >
         <div className="max-w-[1400px] mx-auto flex flex-wrap items-start gap-8 lg:gap-20">
           {[
-            { value: "DeepSecure", label: "currently building" },
+            { value: hero?.currentBuilding ?? "DeepSecure", label: "currently building" },
             { value: "6th", label: "Teknofest 2024 in Turkey" },
             { value: "2", label: "industry internships" },
           ].map((stat) => (

@@ -2,37 +2,18 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { profile } from "./portfolio-data";
 
 type FooterLink = {
   name: string;
   href: string;
 };
 
-const footerLinks: Record<string, FooterLink[]> = {
-  Portfolio: [
-    { name: "Profile", href: "#profile" },
-    { name: "Experience", href: "#experience" },
-    { name: "Projects", href: "#projects" },
-    { name: "Skills", href: "#skills" },
-  ],
-  Projects: [
-    { name: "DeepSecure", href: "#projects" },
-    { name: "Teknofest 2024", href: "#projects" },
-    { name: "GRIT Website", href: profile.grit },
-  ],
-  Contact: [
-    { name: "Email", href: `mailto:${profile.email}` },
-    { name: "GitHub", href: profile.github },
-    { name: "LinkedIn", href: profile.linkedin },
-  ],
+type Profile = {
+  email: string;
+  github: string;
+  linkedin: string;
+  grit: string;
 };
-
-const socialLinks = [
-  { name: "GitHub", href: profile.github },
-  { name: "LinkedIn", href: profile.linkedin },
-  { name: "Email", href: `mailto:${profile.email}` },
-];
 
 function AnimatedWaveCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -90,7 +71,32 @@ function AnimatedWaveCanvas() {
   return <canvas ref={canvasRef} className="w-full h-full" />;
 }
 
-export function FooterSection() {
+export function FooterSection({ profile: profileData }: { profile: Profile }) {
+  const footerLinks: Record<string, FooterLink[]> = {
+    Portfolio: [
+      { name: "Profile", href: "#profile" },
+      { name: "Experience", href: "#experience" },
+      { name: "Projects", href: "#projects" },
+      { name: "Skills", href: "#skills" },
+    ],
+    Projects: [
+      { name: "DeepSecure", href: "#projects" },
+      { name: "Teknofest 2024", href: "#projects" },
+      { name: "GRIT Website", href: profileData.grit },
+    ],
+    Contact: [
+      { name: "Email", href: `mailto:${profileData.email}` },
+      { name: "GitHub", href: profileData.github },
+      { name: "LinkedIn", href: profileData.linkedin },
+    ],
+  };
+
+  const socialLinks = [
+    { name: "GitHub", href: profileData.github },
+    { name: "LinkedIn", href: profileData.linkedin },
+    { name: "Email", href: `mailto:${profileData.email}` },
+  ];
+
   return (
     <footer className="relative bg-black">
       {/* Panoramic banner image */}

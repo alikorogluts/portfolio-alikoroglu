@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { highlights } from "./portfolio-data";
 
-const metrics = [
+type Highlight = {
+  value: string;
+  label: string;
+  sublabel: string;
+};
+
+const fallbackMetrics = [
   { 
     value: 6, 
     suffix: "", 
@@ -26,6 +31,19 @@ const metrics = [
     sublabel: "distributed, real-time, ML, and mobile",
   },
 ];
+
+function highlightToMetric(item: Highlight) {
+  const match = item.value.match(/^(\d+)(.*)$/);
+  const value = match ? Number(match[1]) : 0;
+
+  return {
+    value,
+    suffix: match?.[2] ?? "",
+    prefix: "",
+    label: item.label,
+    sublabel: item.sublabel,
+  };
+}
 
 function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix?: string; prefix?: string }) {
   const [count, setCount] = useState(0);
@@ -217,10 +235,13 @@ function DotGraph({
   );
 }
 
-export function MetricsSection() {
+export function MetricsSection({ highlights: highlightItems }: { highlights: Highlight[] }) {
   const [time, setTime] = useState<Date | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const displayHighlights = highlightItems;
+  const metrics = displayHighlights.map(highlightToMetric);
+  const displayMetrics = metrics.length >= 3 ? metrics : fallbackMetrics;
 
   useEffect(() => {
     setTime(new Date());
@@ -286,17 +307,17 @@ export function MetricsSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}>
             <div className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-4 whitespace-nowrap overflow-hidden">
-              <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} prefix={metrics[0].prefix} />
+              <AnimatedNumber end={displayMetrics[0].value} suffix={displayMetrics[0].suffix} prefix={displayMetrics[0].prefix} />
             </div>
             <div className="mb-6">
               <DotGraph color="white" height={36} freq1={0.28} freq2={0.09} freqT={0.5} speed={0.018} baseline={0.35} amplitude={0.55} />
             </div>
-            <div className="text-lg text-foreground mb-2">{metrics[0].label}</div>
-            <div className="text-sm text-muted-foreground font-mono">{metrics[0].sublabel}</div>
+            <div className="text-lg text-foreground mb-2">{displayMetrics[0].label}</div>
+            <div className="text-sm text-muted-foreground font-mono">{displayMetrics[0].sublabel}</div>
           </div>
 
           {/* Metrics */}
-          {metrics.slice(1).map((metric, index) => (
+          {displayMetrics.slice(1).map((metric, index) => (
             <div
               key={metric.label}
               className={`bg-foreground/[0.02] border border-foreground/10 p-8 flex flex-col items-start justify-between gap-6 transition-all duration-700 ${
@@ -329,7 +350,7 @@ export function MetricsSection() {
         <div className={`mt-16 pt-8 border-t border-foreground/10 flex flex-wrap items-center gap-x-12 gap-y-4 text-sm font-mono text-muted-foreground transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          {highlights.map((item) => (
+          {displayHighlights.map((item) => (
             <span key={item.label}>
               <span className="text-foreground">{item.value}</span> {item.label}
             </span>

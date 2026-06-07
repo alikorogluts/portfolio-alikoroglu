@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { experience } from "./portfolio-data";
 
-export function HowItWorksSection() {
+type ExperienceItem = {
+  number: string;
+  title: string;
+  subtitle: string;
+  description: string;
+};
+
+export function HowItWorksSection({ experience: experienceItems }: { experience: ExperienceItem[] }) {
   const [activeStep, setActiveStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const displayExperience = experienceItems;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -22,10 +29,10 @@ export function HowItWorksSection() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % experience.length);
+      setActiveStep((prev) => (prev + 1) % displayExperience.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [displayExperience.length]);
 
   return (
     <section
@@ -73,7 +80,7 @@ export function HowItWorksSection() {
 
         {/* Horizontal Steps Layout */}
         <div className="grid lg:grid-cols-3 gap-4">
-          {experience.map((step, index) => (
+          {displayExperience.map((step, index) => (
             <button
               key={step.number}
               type="button"

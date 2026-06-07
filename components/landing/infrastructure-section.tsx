@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { projects } from "./portfolio-data";
+
+type ProjectItem = {
+  name: string;
+  label: string;
+  description: string;
+  stack: string;
+  metric: string;
+};
 
 const regions = [
   { name: "Backend", nodes: 4, status: ".NET" },
@@ -10,10 +17,11 @@ const regions = [
   { name: "Messaging", nodes: 1, status: "RabbitMQ" },
 ];
 
-export function InfrastructureSection() {
+export function InfrastructureSection({ projects: projectItems }: { projects: ProjectItem[] }) {
   const [isVisible, setIsVisible] = useState(false);
   const [activeRegion, setActiveRegion] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const displayProjects = projectItems;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -73,7 +81,7 @@ export function InfrastructureSection() {
               <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg transition-all duration-1000 delay-100 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}>
-                {projects[0].description}
+                {displayProjects[0].description}
               </p>
             </div>
           </div>
@@ -148,7 +156,7 @@ export function InfrastructureSection() {
                 <span className="text-2xl text-muted-foreground">pipeline</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                {projects[0].stack}
+                {displayProjects[0].stack}
               </p>
             </div>
           </div>
@@ -200,7 +208,7 @@ export function InfrastructureSection() {
         <div className={`mt-12 grid md:grid-cols-2 gap-4 transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          {projects.slice(1).map((project) => (
+          {displayProjects.slice(1).map((project) => (
             <div key={project.name} className="p-6 lg:p-8 border border-foreground/10 bg-foreground/[0.02]">
               <span className="text-xs font-mono text-muted-foreground">{project.label}</span>
               <h3 className="text-2xl lg:text-3xl font-display mt-3 mb-4">{project.name}</h3>

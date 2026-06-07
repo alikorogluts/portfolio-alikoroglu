@@ -2,13 +2,23 @@
 
 import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { awards } from "./portfolio-data";
 
-export function TestimonialsSection() {
+type Award = {
+  quote: string;
+  title: string;
+  role: string;
+  metric: {
+    value: string;
+    label: string;
+  };
+};
+
+export function TestimonialsSection({ awards: awardItems }: { awards: Award[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const sectionRef = useRef<HTMLElement>(null);
+  const displayAwards = awardItems;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,10 +35,10 @@ export function TestimonialsSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       setDirection("right");
-      setActiveIndex((prev) => (prev + 1) % awards.length);
+      setActiveIndex((prev) => (prev + 1) % displayAwards.length);
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [displayAwards.length]);
 
   const goTo = (index: number) => {
     setDirection(index > activeIndex ? "right" : "left");
@@ -37,15 +47,15 @@ export function TestimonialsSection() {
 
   const goPrev = () => {
     setDirection("left");
-    setActiveIndex((prev) => (prev - 1 + awards.length) % awards.length);
+    setActiveIndex((prev) => (prev - 1 + displayAwards.length) % displayAwards.length);
   };
 
   const goNext = () => {
     setDirection("right");
-    setActiveIndex((prev) => (prev + 1) % awards.length);
+    setActiveIndex((prev) => (prev + 1) % displayAwards.length);
   };
 
-  const activeTestimonial = awards[activeIndex];
+  const activeTestimonial = displayAwards[activeIndex];
 
   return (
     <section ref={sectionRef} className="relative py-32 lg:py-40 bg-[oklch(0.075_0.01_260)] text-foreground overflow-hidden">
@@ -146,7 +156,7 @@ export function TestimonialsSection() {
 
             {/* Progress indicators */}
             <div className="flex gap-2">
-                {awards.map((_, idx) => (
+                {displayAwards.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => goTo(idx)}
@@ -168,7 +178,7 @@ export function TestimonialsSection() {
                 Featured highlights
               </span>
               <div className="flex flex-wrap gap-3">
-                {awards.map((t, idx) => (
+                {displayAwards.map((t, idx) => (
                   <button
                     key={t.title}
                     onClick={() => goTo(idx)}

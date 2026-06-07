@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { profile, skillGroups } from "./portfolio-data";
 
 const logos: Record<string, React.ReactNode> = {
   OpenAI: (
@@ -66,15 +65,28 @@ const logos: Record<string, React.ReactNode> = {
   ),
 };
 
-const integrations = [
-  ...skillGroups,
-];
+type Profile = {
+  github: string;
+};
 
-export function IntegrationsSection() {
+type SkillGroup = {
+  name: string;
+  category: string;
+  items: string[];
+};
+
+export function IntegrationsSection({
+  profile: profileData,
+  skillGroups: skillGroupItems,
+}: {
+  profile: Profile;
+  skillGroups: SkillGroup[];
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const integrations = skillGroupItems;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -214,7 +226,7 @@ export function IntegrationsSection() {
             ))}
           </div>
 
-          <a href={profile.github} className="group inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
+          <a href={profileData.github} className="group inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
             View GitHub
             <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
           </a>
