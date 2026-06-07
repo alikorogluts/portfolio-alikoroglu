@@ -8,15 +8,23 @@ import { prisma } from "@/lib/prisma";
 import { deleteProject } from "../actions";
 import { AdminShell } from "../admin-shell";
 import { EmptyState, SectionCard, StatusBadge } from "../admin-ui";
+import { AdminFeedback, ConfirmSubmitButton } from "../form-controls";
 
-export default async function AdminProjectsPage() {
+type AdminProjectsPageProps = {
+  searchParams: Promise<{ success?: string; error?: string }>;
+};
+
+export default async function AdminProjectsPage({ searchParams }: AdminProjectsPageProps) {
   await requireAdmin();
+  const { success, error } = await searchParams;
   const projects = await prisma.portfolioProject.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
 
   return (
     <AdminShell title="Projects" description="Create, edit and publish portfolio projects.">
+      <AdminFeedback message={success} />
+      <AdminFeedback message={error} type="error" />
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-white/45">{projects.length} project records</p>
         <Button asChild className="bg-white text-black hover:bg-white/85">
@@ -48,10 +56,10 @@ export default async function AdminProjectsPage() {
               <thead className="border-b border-white/10 bg-white/[0.04] text-white/45">
                 <tr>
                   <th className="px-4 py-3 font-medium">Title</th>
-                  <th className="px-4 py-3 font-medium">Teknolojiler</th>
+                  <th className="px-4 py-3 font-medium">Technologies</th>
                   <th className="px-4 py-3 font-medium">Order</th>
-                  <th className="px-4 py-3 font-medium">Durum</th>
-                  <th className="px-4 py-3 font-medium">Linkler</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Links</th>
                   <th className="px-4 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
@@ -68,6 +76,7 @@ export default async function AdminProjectsPage() {
                       <StatusBadge tone={project.isPublished ? "success" : "warning"}>
                         {project.isPublished ? "Published" : "Draft"}
                       </StatusBadge>
+                      {project.isFeatured ? <StatusBadge tone="neutral">Featured</StatusBadge> : null}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex gap-2 text-white/60">
@@ -93,10 +102,10 @@ export default async function AdminProjectsPage() {
                         </Button>
                         <form action={deleteProject}>
                           <input type="hidden" name="projectId" value={project.id} />
-                          <Button variant="outline" size="sm" className="border-red-400/20 bg-red-400/5 text-red-200 hover:bg-red-400/10 hover:text-red-100">
+                          <ConfirmSubmitButton size="sm" confirmLabel="Delete project">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
-                          </Button>
+                          </ConfirmSubmitButton>
                         </form>
                       </div>
                     </td>
@@ -118,7 +127,7 @@ export default async function AdminProjectsPage() {
                     {project.isPublished ? "Published" : "Draft"}
                   </StatusBadge>
                 </div>
-                <p className="mt-4 text-sm text-white/45">{project.stack ?? "Teknoloji bilgisi yok"}</p>
+                <p className="mt-4 text-sm text-white/45">{project.stack ?? "No technology details"}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   <Button asChild variant="outline" size="sm" className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
                     <Link href={`/admin/projects/${project.id}/edit`}>
@@ -128,10 +137,10 @@ export default async function AdminProjectsPage() {
                   </Button>
                   <form action={deleteProject}>
                     <input type="hidden" name="projectId" value={project.id} />
-                    <Button variant="outline" size="sm" className="border-red-400/20 bg-red-400/5 text-red-200 hover:bg-red-400/10 hover:text-red-100">
+                    <ConfirmSubmitButton size="sm" confirmLabel="Delete project">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
-                    </Button>
+                    </ConfirmSubmitButton>
                   </form>
                 </div>
               </SectionCard>

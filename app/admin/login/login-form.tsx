@@ -17,6 +17,7 @@ export function AdminLoginForm() {
   const [step, setStep] = useState<"password" | "two-factor">("password");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const successMessage = searchParams.get("success");
 
   const nextPath = useMemo(() => {
     const value = searchParams.get("next");
@@ -138,6 +139,12 @@ export function AdminLoginForm() {
         <h2 className="text-xl font-medium text-white">Admin Login</h2>
         <p className="mt-2 text-sm text-white/45">Sign in with your owner credentials.</p>
       </div>
+
+      {successMessage ? (
+        <p className="mb-5 rounded-md border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm text-emerald-100">
+          {successMessage}
+        </p>
+      ) : null}
 
       <div className="space-y-5">
         <div className="space-y-2">

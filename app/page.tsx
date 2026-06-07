@@ -10,6 +10,7 @@ import { DevelopersSection } from "@/components/landing/developers-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { FooterSection } from "@/components/landing/footer-section";
+import { MaintenancePage } from "@/components/landing/maintenance-page";
 import {
   getPortfolioAwards,
   getPortfolioDataDiagnostics,
@@ -19,11 +20,33 @@ import {
   getPortfolioProfile,
   getPortfolioProjects,
   getPortfolioSkills,
+  getSiteSettings,
 } from "@/lib/portfolio-data";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+
+  return {
+    title: settings.siteTitle,
+    description: settings.siteDescription,
+    openGraph: settings.ogImageUrl
+      ? {
+          images: [{ url: settings.ogImageUrl }],
+        }
+      : undefined,
+  };
+}
+
 export default async function Home() {
+  const settings = await getSiteSettings();
+
+  if (settings.maintenanceMode) {
+    return <MaintenancePage settings={settings} />;
+  }
+
   const profile = await getPortfolioProfile();
   const [hero, projects, experience, skillGroups, highlights, awards] = await Promise.all([
     getPortfolioHero(profile),
@@ -44,8 +67,8 @@ export default async function Home() {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <Navigation profile={profile} />
-      <HeroSection profile={profile} hero={hero} />
+      <Navigation profile={profile} settings={settings} />
+      <HeroSection profile={profile} hero={hero} settings={settings} />
       <FeaturesSection />
       <HowItWorksSection experience={experience} />
       <InfrastructureSection projects={projects} />
@@ -54,8 +77,8 @@ export default async function Home() {
       <SecuritySection />
       <DevelopersSection />
       <TestimonialsSection awards={awards} />
-      <CtaSection profile={profile} />
-      <FooterSection profile={profile} />
+      <CtaSection profile={profile} settings={settings} />
+      <FooterSection profile={profile} settings={settings} />
     </main>
   );
 }

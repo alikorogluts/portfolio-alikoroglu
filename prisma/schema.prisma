@@ -28,6 +28,8 @@ enum AuditAction {
   LOGIN
   LOGOUT
   PASSWORD_CHANGE
+  PASSWORD_CHANGED
+  EMAIL_CHANGED
   TWO_FACTOR_ENABLE
   TWO_FACTOR_DISABLE
   TWO_FACTOR_ENABLED
@@ -35,6 +37,8 @@ enum AuditAction {
   TWO_FACTOR_SUCCESS
   TWO_FACTOR_FAILED
   BACKUP_CODE_USED
+  SESSION_REVOKED
+  ALL_SESSIONS_REVOKED
   PUBLISH
   UNPUBLISH
   PROFILE_UPDATED
@@ -52,8 +56,17 @@ enum AuditAction {
   HIGHLIGHT_UPDATED
   HIGHLIGHT_DELETED
   MESSAGE_READ
+  MESSAGE_UNREAD
+  MESSAGE_ARCHIVED
   MESSAGE_DELETED
+  MEDIA_UPLOADED
+  MEDIA_DELETED
   SETTINGS_UPDATED
+}
+
+enum MediaKind {
+  IMAGE
+  DOCUMENT
 }
 
 model AdminUser {
@@ -74,6 +87,7 @@ model AdminUser {
   loginLogs   AdminLoginLog[]
   auditLogs   AdminAuditLog[]
   backupCodes AdminBackupCode[]
+  mediaAssets AdminMediaAsset[]
 }
 
 model AdminBackupCode {
@@ -161,39 +175,72 @@ model PortfolioProfile {
 }
 
 model PortfolioHero {
-  id                String   @id @default(cuid())
-  headlinePrefix    String   @default("Ali Koroglu")
-  headlineTemplate  String   @default("systems that")
-  animatedWords     Json
-  description       String?
-  primaryCtaLabel   String?
-  primaryCtaHref    String?
-  secondaryCtaLabel String?
-  secondaryCtaHref  String?
-  currentBuilding   String?
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  headlinePrefix     String   @default("Ali Koroglu")
+  headlineTemplate   String   @default("systems that")
+  animatedWords      Json
+  description        String?
+  primaryCtaLabel    String?
+  primaryCtaHref     String?
+  secondaryCtaLabel  String?
+  secondaryCtaHref   String?
+  currentBuilding    String?
+  backgroundImageUrl String?
+  visualImageUrl     String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([isActive])
 }
 
+model SiteSettings {
+  id                        String   @id @default(cuid())
+  siteTitle                 String   @default("Ali Koroglu - Full-Stack & Mobile Developer")
+  siteDescription           String   @default("Portfolio of Ali Koroglu, a computer engineering senior building .NET, Next.js, Flutter, and Python ML systems.")
+  defaultLanguage           String   @default("en")
+  maintenanceMode           Boolean  @default(false)
+  showAvailabilityBadge     Boolean  @default(true)
+  showDownloadCvButton      Boolean  @default(true)
+  showGithubButton          Boolean  @default(true)
+  showEmailButton           Boolean  @default(true)
+  contactFormEnabled        Boolean  @default(true)
+  contactRecipientEmail     String?
+  footerCopyrightText       String?
+  analyticsEnabled          Boolean  @default(false)
+  analyticsProvider         String?
+  analyticsId               String?
+  maintenanceTitle          String?
+  maintenanceDescription    String?
+  maintenanceExpectedBackAt String?
+  maintenanceImageUrl       String?
+  ogImageUrl                String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
 model PortfolioProject {
-  id            String   @id @default(cuid())
-  title         String
-  slug          String?
-  label         String?
-  description   String
-  stack         String?
-  metric        String?
-  githubUrl     String?
-  demoUrl       String?
-  coverImageUrl String?
-  sortOrder     Int      @default(0)
-  isFeatured    Boolean  @default(false)
-  isPublished   Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  title                String
+  slug                 String?
+  label                String?
+  description          String
+  stack                String?
+  metric               String?
+  githubUrl            String?
+  demoUrl              String?
+  coverImageUrl        String?
+  spotlightTitle       String?
+  spotlightSubtitle    String?
+  spotlightDescription String?
+  spotlightImageUrl    String?
+  spotlightMetricLabel String?
+  spotlightMetricValue String?
+  sortOrder            Int      @default(0)
+  isFeatured           Boolean  @default(false)
+  isPublished          Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@index([sortOrder])
   @@index([isPublished])
@@ -201,17 +248,37 @@ model PortfolioProject {
 }
 
 model ContactMessage {
-  id        String    @id @default(cuid())
-  name      String
-  email     String
-  subject   String
-  message   String
-  isRead    Boolean   @default(false)
-  readAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String    @id @default(cuid())
+  name       String
+  email      String
+  subject    String
+  message    String
+  isRead     Boolean   @default(false)
+  readAt     DateTime?
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@index([isRead])
+  @@index([archivedAt])
+  @@index([createdAt])
+}
+
+model AdminMediaAsset {
+  id           String    @id @default(cuid())
+  fileName     String
+  originalName String
+  url          String    @unique
+  mimeType     String
+  size         Int
+  kind         MediaKind
+  uploadedById String
+  createdAt    DateTime  @default(now())
+
+  uploadedBy AdminUser @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([kind])
+  @@index([uploadedById])
   @@index([createdAt])
 }
 

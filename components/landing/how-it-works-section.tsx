@@ -6,6 +6,10 @@ type ExperienceItem = {
   number: string;
   title: string;
   subtitle: string;
+  company?: string;
+  role?: string;
+  dateRange?: string;
+  detail?: string;
   description: string;
 };
 
@@ -112,6 +116,12 @@ export function HowItWorksSection({ experience: experienceItems }: { experience:
               <span className="text-xl text-white/40 font-display block mb-6">
                 {step.subtitle}
               </span>
+              {step.role || step.dateRange ? (
+                <p className="mb-6 text-sm font-mono text-white/35">
+                  {[step.role, step.dateRange].filter(Boolean).join(" · ")}
+                </p>
+              ) : null}
+              {step.detail ? <p className="mb-6 text-sm text-white/45">{step.detail}</p> : null}
 
               {/* Description */}
               <p className={`text-white/60 leading-relaxed transition-opacity duration-300 ${

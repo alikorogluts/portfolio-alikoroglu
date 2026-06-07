@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { createHash } from "node:crypto";
 import { AuditAction, type AdminRole, LoginStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { isTransientDatabaseError, prisma, readWithRetry } from "@/lib/prisma";
 import { compareBackupCode, verifyTotpToken } from "@/lib/two-factor";
 
 const SESSION_COOKIE_NAME = "admin_session";
@@ -467,9 +467,21 @@ export async function getCurrentUser(): Promise<CurrentAdminUser | null> {
     return null;
   }
 
-  const session = await prisma.adminSession.findUnique({
-    where: { tokenHash: hashSessionToken(token) },
-    include: { user: true },
+  const session = await readWithRetry(
+    () =>
+      prisma.adminSession.findUnique({
+        where: { tokenHash: hashSessionToken(token) },
+        include: { user: true },
+      }),
+    "admin session lookup",
+  ).catch((error) => {
+    if (isTransientDatabaseError(error)) {
+      console.error("[auth] Admin session lookup failed after retry.", error);
+      return null;
+    }
+
+    console.error("[auth] Admin session lookup failed.", error);
+    return null;
   });
 
   if (

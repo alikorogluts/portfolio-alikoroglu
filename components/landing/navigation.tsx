@@ -17,7 +17,12 @@ type Profile = {
   github: string;
 };
 
-export function Navigation({ profile: profileData }: { profile: Profile }) {
+type Settings = {
+  showGithubButton: boolean;
+  showEmailButton: boolean;
+};
+
+export function Navigation({ profile: profileData, settings }: { profile: Profile; settings: Settings }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -70,9 +75,12 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
+            {settings.showGithubButton ? (
             <a href={profileData.github} className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
               GitHub
             </a>
+            ) : null}
+            {settings.showEmailButton ? (
             <Button
               asChild
               size="sm"
@@ -84,6 +92,7 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
             >
               <a href={`mailto:${profileData.email}`}>Email me</a>
             </Button>
+            ) : null}
           </div>
 
           {/* Mobile Menu Button */}
@@ -132,6 +141,7 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
           </div>
           
           {/* Bottom CTAs */}
+          {settings.showGithubButton || settings.showEmailButton ? (
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
             isMobileMenuOpen 
               ? "opacity-100 translate-y-0" 
@@ -139,6 +149,7 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
+            {settings.showGithubButton ? (
             <Button 
               asChild
               variant="outline" 
@@ -147,6 +158,8 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
             >
               <a href={profileData.github}>GitHub</a>
             </Button>
+            ) : null}
+            {settings.showEmailButton ? (
             <Button 
               asChild
               className="flex-1 bg-foreground/[0.06] hover:bg-foreground/[0.1] border border-foreground/15 text-foreground rounded-full h-14 text-base"
@@ -154,7 +167,9 @@ export function Navigation({ profile: profileData }: { profile: Profile }) {
             >
               <a href={`mailto:${profileData.email}`}>Email me</a>
             </Button>
+            ) : null}
           </div>
+          ) : null}
         </div>
       </div>
     </header>

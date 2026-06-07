@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { ArrowRight } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 const fallbackWords = ["build", "ship", "detect", "scale"];
 
@@ -118,13 +121,31 @@ type Hero = {
   headlineTemplate: string;
   animatedWords: string[];
   description: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
   currentBuilding: string;
+  backgroundImageUrl: string;
 };
 
-export function HeroSection({ profile: profileData, hero }: { profile: Profile; hero?: Hero }) {
+type Settings = {
+  showAvailabilityBadge: boolean;
+};
+
+export function HeroSection({
+  profile: profileData,
+  hero,
+  settings,
+}: {
+  profile: Profile;
+  hero?: Hero;
+  settings: Settings;
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
   const words = hero?.animatedWords?.length ? hero.animatedWords : fallbackWords;
+  const longestWordLength = Math.max(...words.map((word) => word.length), 1);
 
   useEffect(() => {
     setIsVisible(true);
@@ -141,16 +162,20 @@ export function HeroSection({ profile: profileData, hero }: { profile: Profile; 
     <section id="profile" className="relative min-h-screen flex flex-col justify-center items-start overflow-hidden bg-black">
       {/* Background video */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-          className="w-full h-full object-cover object-center opacity-80"
-        >
-          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-hero-0BnFGdr81Ifnj3WbBZoNt1KE4D5DMT.mp4" type="video/mp4" />
-        </video>
+        {hero?.backgroundImageUrl ? (
+          <img src={hero.backgroundImageUrl} alt="" aria-hidden="true" className="w-full h-full object-cover object-center opacity-80" />
+        ) : (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+            className="w-full h-full object-cover object-center opacity-80"
+          >
+            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-hero-0BnFGdr81Ifnj3WbBZoNt1KE4D5DMT.mp4" type="video/mp4" />
+          </video>
+        )}
         {/* Subtle overlay to ensure text readability on the left */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
@@ -183,9 +208,10 @@ export function HeroSection({ profile: profileData, hero }: { profile: Profile; 
       </div>
       
       <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 lg:px-12 py-32 lg:py-40">
-        <div className="lg:max-w-[55%]">
+        <div className="max-w-5xl lg:max-w-[68%]">
         {/* Eyebrow */}
-        <div 
+        {settings.showAvailabilityBadge ? (
+        <div
           className={`mb-8 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
@@ -195,18 +221,22 @@ export function HeroSection({ profile: profileData, hero }: { profile: Profile; 
               {profileData.availability}
             </span>
         </div>
+        ) : null}
         
         {/* Main headline */}
         <div className="mb-12">
-          <h1 
-            className={`text-left text-[clamp(2rem,6vw,7rem)] font-display leading-[0.92] tracking-tight text-white transition-all duration-1000 ${
+          <h1
+            className={`text-left text-[clamp(2.75rem,7vw,7rem)] font-display leading-[0.92] tracking-tight text-white transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
             <span className="block">{hero?.headlinePrefix ?? profileData.name}</span>
-            <span className="block">
+            <span className="block max-w-full md:whitespace-nowrap">
               {hero?.headlineTemplate ?? "systems that"}{" "}
-              <span className="relative inline-block">
+              <span
+                className="relative inline-block whitespace-nowrap align-baseline"
+                style={{ minWidth: `${longestWordLength}ch` }}
+              >
                 <BlurWord word={words[wordIndex]} trigger={wordIndex} />
               </span>
             </span>
@@ -223,6 +253,26 @@ export function HeroSection({ profile: profileData, hero }: { profile: Profile; 
           <p className="text-sm font-mono text-white/50 leading-relaxed">
             {profileData.stackLine}
           </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button
+              asChild
+              size="lg"
+              className="h-14 rounded-full border border-white/15 bg-white/[0.08] px-8 text-base text-white hover:bg-white/[0.12]"
+            >
+              <a href={hero?.primaryCtaHref ?? "#contact"}>
+                {hero?.primaryCtaLabel ?? "Email me"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-14 rounded-full border-white/15 bg-white/[0.02] px-8 text-base text-white hover:bg-white/[0.08] hover:text-white"
+            >
+              <a href={hero?.secondaryCtaHref ?? "#projects"}>{hero?.secondaryCtaLabel ?? "View GitHub"}</a>
+            </Button>
+          </div>
         </div>
         </div>
       </div>

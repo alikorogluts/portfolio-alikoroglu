@@ -1,6 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { AdminRole, PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
 import {
@@ -14,44 +13,36 @@ import {
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid PostgreSQL URL."),
-  ADMIN_EMAIL: z.string().email("ADMIN_EMAIL must be a valid email address."),
-  ADMIN_PASSWORD: z
-    .string()
-    .min(12, "ADMIN_PASSWORD must be at least 12 characters long."),
 });
 
 async function main() {
   const env = envSchema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   });
 
   if (!env.success) {
     const message = env.error.issues.map((issue) => issue.message).join(" ");
     throw new Error(
-      `Missing or invalid seed environment variables. ${message} Set ADMIN_EMAIL and ADMIN_PASSWORD before running pnpm db:seed.`
+      `Missing or invalid seed environment variables. ${message} Set DATABASE_URL before running pnpm db:seed.`
     );
   }
 
   const adapter = new PrismaPg({ connectionString: env.data.DATABASE_URL });
   const prisma = new PrismaClient({ adapter });
-  const passwordHash = await bcrypt.hash(env.data.ADMIN_PASSWORD, 12);
 
   try {
-    const admin = await prisma.adminUser.upsert({
-      where: { email: env.data.ADMIN_EMAIL.toLowerCase() },
-      update: {
-        passwordHash,
-        role: AdminRole.OWNER,
-        isActive: true,
-      },
-      create: {
-        email: env.data.ADMIN_EMAIL.toLowerCase(),
-        passwordHash,
-        role: AdminRole.OWNER,
-        isActive: true,
-      },
+    const adminCount = await prisma.adminUser.count();
+
+    if (adminCount === 0) {
+      console.warn(
+        "No AdminUser records found. Create the first admin user directly in the database before signing in."
+      );
+    } else {
+      console.log(`Found ${adminCount} database-backed admin user(s). Seed will not modify admin credentials.`);
+    }
+
+    const owner = await prisma.adminUser.findFirst({
+      orderBy: { createdAt: "asc" },
       select: {
         id: true,
         email: true,
@@ -59,7 +50,9 @@ async function main() {
       },
     });
 
-    console.log(`Seeded ${admin.role} admin user: ${admin.email}`);
+    if (owner) {
+      console.log(`Primary admin user: ${owner.email} (${owner.role})`);
+    }
 
     const existingProfile = await prisma.portfolioProfile.findFirst({
       orderBy: { updatedAt: "desc" },
@@ -87,6 +80,35 @@ async function main() {
       });
     } else {
       await prisma.portfolioProfile.create({ data: profileData });
+    }
+
+    const existingSettings = await prisma.siteSettings.findFirst({
+      orderBy: { updatedAt: "desc" },
+    });
+    const settingsData = {
+      siteTitle: `${profile.name} - ${profile.role}`,
+      siteDescription: `${profile.subtitle}. ${profile.summary}`,
+      defaultLanguage: "en",
+      maintenanceMode: false,
+      showAvailabilityBadge: true,
+      showDownloadCvButton: true,
+      showGithubButton: true,
+      showEmailButton: true,
+      contactFormEnabled: true,
+      contactRecipientEmail: profile.email,
+      footerCopyrightText: `© ${new Date().getFullYear()} ${profile.name}. Built with focus, restraint and care.`,
+      analyticsEnabled: false,
+      analyticsProvider: null,
+      analyticsId: null,
+    };
+
+    if (existingSettings) {
+      await prisma.siteSettings.update({
+        where: { id: existingSettings.id },
+        data: settingsData,
+      });
+    } else {
+      await prisma.siteSettings.create({ data: settingsData });
     }
 
     const existingHero = await prisma.portfolioHero.findFirst({

@@ -16,7 +16,7 @@ type AuditLogsPageProps = {
 };
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("tr-TR", {
+  return new Intl.DateTimeFormat("en-US", {
     dateStyle: "short",
     timeStyle: "medium",
   }).format(date);
@@ -69,8 +69,8 @@ export default async function AuditLogsPage({ searchParams }: AuditLogsPageProps
             <table className="w-full text-left text-sm">
               <thead className="border-b border-white/10 bg-white/[0.04] text-white/45">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Tarih</th>
-                  <th className="px-4 py-3 font-medium">Aksiyon</th>
+                  <th className="px-4 py-3 font-medium">Date</th>
+                  <th className="px-4 py-3 font-medium">Action</th>
                   <th className="px-4 py-3 font-medium">Admin</th>
                   <th className="px-4 py-3 font-medium">Entity</th>
                   <th className="px-4 py-3 font-medium">Summary</th>

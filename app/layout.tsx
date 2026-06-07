@@ -1,7 +1,8 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+import { PortfolioAnalytics } from '@/components/analytics'
+import { getSiteSettings } from '@/lib/portfolio-data'
 import './globals.css'
 
 const instrumentSans = Instrument_Sans({ 
@@ -26,16 +27,18 @@ export const metadata: Metadata = {
   generator: 'v0.app',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const settings = await getSiteSettings()
+
   return (
     <html lang="en">
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         {children}
-        <Analytics />
+        <PortfolioAnalytics settings={settings} />
       </body>
     </html>
   )

@@ -23,7 +23,31 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
+    const { prisma, readWithRetry } = await import("@/lib/prisma");
+    const settings = await readWithRetry(
+      () => prisma.siteSettings.findFirst({ orderBy: { updatedAt: "desc" } }),
+      "contact settings lookup",
+    );
+
+    if (settings?.maintenanceMode) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "The site is currently under maintenance. Please try again later.",
+        },
+        { status: 503 },
+      );
+    }
+
+    if (settings && !settings.contactFormEnabled) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "The contact form is currently disabled.",
+        },
+        { status: 403 },
+      );
+    }
 
     await prisma.contactMessage.create({
       data: {

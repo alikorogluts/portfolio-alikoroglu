@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BriefcaseBusiness, FolderKanban, Home, KeyRound, LockKeyhole, Mail, Menu, PanelLeftClose, PanelLeftOpen, Settings, ShieldCheck, Sparkles, UserRound, X } from "lucide-react";
+import { Activity, BriefcaseBusiness, FolderKanban, Home, ImageIcon, KeyRound, LockKeyhole, Mail, Menu, PanelLeftClose, PanelLeftOpen, Settings, ShieldCheck, Sparkles, UserRound, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const navItems = [
   { href: "/admin/hero", label: "Hero", icon: Sparkles },
   { href: "/admin/experience", label: "Experience", icon: BriefcaseBusiness },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
+  { href: "/admin/media", label: "Media", icon: ImageIcon },
   { href: "/admin/skills", label: "Skills", icon: KeyRound },
   { href: "/admin/highlights", label: "Highlights", icon: Sparkles },
   { href: "/admin/messages", label: "Messages", icon: Mail },

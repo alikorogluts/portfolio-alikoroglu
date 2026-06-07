@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { ExternalLink, Github } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type ProjectItem = {
   name: string;
@@ -8,6 +11,16 @@ type ProjectItem = {
   description: string;
   stack: string;
   metric: string;
+  githubUrl?: string;
+  demoUrl?: string;
+  coverImageUrl?: string;
+  spotlightTitle?: string;
+  spotlightSubtitle?: string;
+  spotlightDescription?: string;
+  spotlightImageUrl?: string;
+  spotlightMetricLabel?: string;
+  spotlightMetricValue?: string;
+  isFeatured?: boolean;
 };
 
 const regions = [
@@ -21,7 +34,14 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
   const [isVisible, setIsVisible] = useState(false);
   const [activeRegion, setActiveRegion] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const displayProjects = projectItems;
+  const spotlightProject = projectItems.find((project) => project.isFeatured) ?? projectItems[0];
+  const displayProjects = projectItems.filter((project) => project !== spotlightProject);
+  const spotlightTitle = spotlightProject?.spotlightTitle || spotlightProject?.name;
+  const spotlightSubtitle = spotlightProject?.spotlightSubtitle || spotlightProject?.label || "spotlight.";
+  const spotlightDescription = spotlightProject?.spotlightDescription || spotlightProject?.description;
+  const spotlightImage = spotlightProject?.spotlightImageUrl || spotlightProject?.coverImageUrl;
+  const spotlightMetricValue = spotlightProject?.spotlightMetricValue || spotlightProject?.metric || "ML";
+  const spotlightMetricLabel = spotlightProject?.spotlightMetricLabel || "spotlight";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,6 +68,7 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
       
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header */}
+        {spotlightProject ? (
         <div className="mb-20">
           <span className={`inline-flex items-center gap-4 text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 ${
             isVisible ? "opacity-100" : "opacity-0"
@@ -70,24 +91,27 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
 
             {/* Titre + description empilés */}
             <div className="flex flex-col justify-center">
-              <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
+              <h2 className={`text-[clamp(3.5rem,9vw,8rem)] font-display tracking-tight leading-[0.9] transition-all duration-1000 break-words ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}>
-                DeepSecure
+                {spotlightTitle}
                 <br />
-                <span className="text-muted-foreground">spotlight.</span>
+                <span className="text-muted-foreground">{spotlightSubtitle}</span>
               </h2>
 
               <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg transition-all duration-1000 delay-100 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}>
-                {displayProjects[0].description}
+                {spotlightDescription}
               </p>
+              <ProjectLinks project={spotlightProject} className="mt-8" />
             </div>
           </div>
         </div>
+        ) : null}
 
         {/* Main content grid */}
+        {spotlightProject ? (
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Large stat card */}
           <div className={`lg:col-span-2 relative p-8 lg:p-12 border border-foreground/10 bg-foreground/[0.02] overflow-hidden transition-all duration-700 ${
@@ -151,12 +175,19 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
             </div>
             
             <div className="relative z-10">
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-7xl lg:text-[8rem] font-display leading-none">ML</span>
-                <span className="text-2xl text-muted-foreground">pipeline</span>
+              <ProjectCover
+                src={spotlightImage}
+                alt={`${spotlightProject.name} cover`}
+                className="mb-8 max-h-72 w-full object-cover"
+              />
+              <div className="flex flex-wrap items-baseline gap-2 mb-4">
+                <span className="text-5xl lg:text-7xl font-display leading-none break-words">
+                  {spotlightMetricValue}
+                </span>
+                <span className="text-2xl text-muted-foreground">{spotlightMetricLabel}</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                {displayProjects[0].stack}
+                {spotlightProject.stack}
               </p>
             </div>
           </div>
@@ -178,6 +209,7 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
             </div>
           </div>
         </div>
+        ) : null}
 
         {/* Region list */}
         <div className={`mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-1000 delay-300 ${
@@ -208,16 +240,51 @@ export function InfrastructureSection({ projects: projectItems }: { projects: Pr
         <div className={`mt-12 grid md:grid-cols-2 gap-4 transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          {displayProjects.slice(1).map((project) => (
+          {displayProjects.map((project) => (
             <div key={project.name} className="p-6 lg:p-8 border border-foreground/10 bg-foreground/[0.02]">
+              <ProjectCover src={project.coverImageUrl} alt={`${project.name} cover`} className="mb-5 aspect-video w-full object-cover" />
               <span className="text-xs font-mono text-muted-foreground">{project.label}</span>
               <h3 className="text-2xl lg:text-3xl font-display mt-3 mb-4">{project.name}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">{project.description}</p>
               <p className="text-xs font-mono text-muted-foreground">{project.stack}</p>
+              <ProjectLinks project={project} className="mt-6" />
             </div>
           ))}
         </div>
       </div>
     </section>
   );
+}
+
+function ProjectLinks({ project, className = "" }: { project: ProjectItem; className?: string }) {
+  if (!project.githubUrl && !project.demoUrl) return null;
+
+  return (
+    <div className={`flex flex-wrap gap-3 ${className}`}>
+      {project.githubUrl ? (
+        <Button asChild size="sm" variant="outline" className="border-foreground/15 bg-foreground/[0.02] text-foreground hover:bg-foreground/[0.06]">
+          <a href={project.githubUrl} target="_blank" rel="noreferrer">
+            <Github className="mr-2 h-4 w-4" />
+            GitHub
+          </a>
+        </Button>
+      ) : null}
+      {project.demoUrl ? (
+        <Button asChild size="sm" className="border border-foreground/15 bg-foreground/[0.08] text-foreground hover:bg-foreground/[0.12]">
+          <a href={project.demoUrl} target="_blank" rel="noreferrer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Demo
+          </a>
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+function ProjectCover({ src, alt, className }: { src?: string; alt: string; className: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) return null;
+
+  return <img src={src} alt={alt} className={className} onError={() => setFailed(true)} />;
 }

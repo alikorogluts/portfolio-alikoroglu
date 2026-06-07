@@ -10,21 +10,24 @@ type Highlight = {
 
 const fallbackMetrics = [
   { 
-    value: 6, 
+    rawValue: "6",
+    numericValue: 6,
     suffix: "", 
     prefix: "",
     label: "Teknofest 2024 place",
     sublabel: "Rockfall Early Warning System",
   },
   { 
-    value: 2, 
+    rawValue: "2",
+    numericValue: 2,
     suffix: "", 
     prefix: "",
     label: "Industry internships",
     sublabel: "Ziraat Technology and Halkbank",
   },
   { 
-    value: 5, 
+    rawValue: "5",
+    numericValue: 5,
     suffix: "", 
     prefix: "",
     label: "Featured projects",
@@ -33,16 +36,25 @@ const fallbackMetrics = [
 ];
 
 function highlightToMetric(item: Highlight) {
-  const match = item.value.match(/^(\d+)(.*)$/);
-  const value = match ? Number(match[1]) : 0;
+  const match = item.value.trim().match(/^(\d+(?:\.\d+)?)(.*)$/);
+  const numericValue = match ? Number(match[1]) : null;
 
   return {
-    value,
+    rawValue: item.value,
+    numericValue,
     suffix: match?.[2] ?? "",
     prefix: "",
     label: item.label,
     sublabel: item.sublabel,
   };
+}
+
+function MetricValue({ metric }: { metric: ReturnType<typeof highlightToMetric> }) {
+  if (metric.numericValue === null) {
+    return <span>{metric.rawValue}</span>;
+  }
+
+  return <AnimatedNumber end={metric.numericValue} suffix={metric.suffix} prefix={metric.prefix} />;
 }
 
 function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix?: string; prefix?: string }) {
@@ -307,7 +319,7 @@ export function MetricsSection({ highlights: highlightItems }: { highlights: Hig
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}>
             <div className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-4 whitespace-nowrap overflow-hidden">
-              <AnimatedNumber end={displayMetrics[0].value} suffix={displayMetrics[0].suffix} prefix={displayMetrics[0].prefix} />
+              <MetricValue metric={displayMetrics[0]} />
             </div>
             <div className="mb-6">
               <DotGraph color="white" height={36} freq1={0.28} freq2={0.09} freqT={0.5} speed={0.018} baseline={0.35} amplitude={0.55} />
@@ -340,7 +352,7 @@ export function MetricsSection({ highlights: highlightItems }: { highlights: Hig
                 />
               </div>
               <div className="text-3xl md:text-4xl lg:text-5xl font-display tracking-tight w-full">
-                <AnimatedNumber end={metric.value} suffix={metric.suffix} prefix={metric.prefix} />
+                <MetricValue metric={metric} />
               </div>
             </div>
           ))}

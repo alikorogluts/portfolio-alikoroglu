@@ -56,8 +56,6 @@ Required variables:
 
 ```text
 DATABASE_URL
-ADMIN_EMAIL
-ADMIN_PASSWORD
 AUTH_SECRET
 TWO_FACTOR_ENCRYPTION_KEY
 ```
@@ -78,11 +76,13 @@ Run migrations only after `DATABASE_URL` is configured:
 pnpm db:migrate --name init_admin_foundation
 ```
 
-Seed the first OWNER admin:
+Seed portfolio CMS content:
 
 ```bash
 pnpm db:seed
 ```
+
+Admin authentication uses `AdminUser` records from the database. The seed script does not read or overwrite admin email/password values from `.env`.
 
 ## Scripts
 
@@ -93,7 +93,7 @@ pnpm start        # Start production server
 pnpm db:generate  # Generate Prisma Client
 pnpm db:migrate   # Run Prisma migration
 pnpm db:push      # Push Prisma schema
-pnpm db:seed      # Seed OWNER admin user
+pnpm db:seed      # Seed portfolio CMS content
 ```
 
 ## Notes

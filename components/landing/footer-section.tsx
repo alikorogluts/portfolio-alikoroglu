@@ -13,6 +13,15 @@ type Profile = {
   github: string;
   linkedin: string;
   grit: string;
+  cv: string;
+};
+
+type Settings = {
+  footerCopyrightText: string;
+  showAvailabilityBadge: boolean;
+  showGithubButton: boolean;
+  showEmailButton: boolean;
+  showDownloadCvButton: boolean;
 };
 
 function AnimatedWaveCanvas() {
@@ -71,7 +80,14 @@ function AnimatedWaveCanvas() {
   return <canvas ref={canvasRef} className="w-full h-full" />;
 }
 
-export function FooterSection({ profile: profileData }: { profile: Profile }) {
+export function FooterSection({ profile: profileData, settings }: { profile: Profile; settings: Settings }) {
+  const contactLinks = [
+    settings.showEmailButton ? { name: "Email", href: `mailto:${profileData.email}` } : null,
+    settings.showGithubButton ? { name: "GitHub", href: profileData.github } : null,
+    { name: "LinkedIn", href: profileData.linkedin },
+    settings.showDownloadCvButton ? { name: "CV", href: profileData.cv } : null,
+  ].filter((link): link is FooterLink => Boolean(link));
+
   const footerLinks: Record<string, FooterLink[]> = {
     Portfolio: [
       { name: "Profile", href: "#profile" },
@@ -84,18 +100,14 @@ export function FooterSection({ profile: profileData }: { profile: Profile }) {
       { name: "Teknofest 2024", href: "#projects" },
       { name: "GRIT Website", href: profileData.grit },
     ],
-    Contact: [
-      { name: "Email", href: `mailto:${profileData.email}` },
-      { name: "GitHub", href: profileData.github },
-      { name: "LinkedIn", href: profileData.linkedin },
-    ],
+    Contact: contactLinks,
   };
 
   const socialLinks = [
-    { name: "GitHub", href: profileData.github },
+    settings.showGithubButton ? { name: "GitHub", href: profileData.github } : null,
     { name: "LinkedIn", href: profileData.linkedin },
-    { name: "Email", href: `mailto:${profileData.email}` },
-  ];
+    settings.showEmailButton ? { name: "Email", href: `mailto:${profileData.email}` } : null,
+  ].filter((link): link is FooterLink => Boolean(link));
 
   return (
     <footer className="relative bg-black">
@@ -166,15 +178,17 @@ export function FooterSection({ profile: profileData }: { profile: Profile }) {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/30">
-            &copy; 2026 Ali Koroglu. Portfolio.
+            {settings.footerCopyrightText}
           </p>
 
+          {settings.showAvailabilityBadge ? (
           <div className="flex items-center gap-4 text-sm text-white/30">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#eca8d6]" />
               Available for opportunities
             </span>
           </div>
+          ) : null}
         </div>
       </div>
     </footer>

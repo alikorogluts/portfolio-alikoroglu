@@ -7,6 +7,11 @@ type SectionCardProps = {
   className?: string;
 };
 
+type HelperTextProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
 export function SectionCard({ children, className }: SectionCardProps) {
   return (
     <section
@@ -18,6 +23,18 @@ export function SectionCard({ children, className }: SectionCardProps) {
       {children}
     </section>
   );
+}
+
+export function FieldDescription({ children, className }: HelperTextProps) {
+  return <p className={cn("text-xs leading-5 text-white/42", className)}>{children}</p>;
+}
+
+export function FieldHint({ children, className }: HelperTextProps) {
+  return <p className={cn("text-xs leading-5 text-white/34", className)}>{children}</p>;
+}
+
+export function FieldHelpText({ children, className }: HelperTextProps) {
+  return <p className={cn("mt-1 text-xs leading-5 text-white/38", className)}>{children}</p>;
 }
 
 type Tone = "neutral" | "success" | "warning" | "danger";

@@ -13,7 +13,14 @@ type Profile = {
   location: string;
 };
 
-export function CtaSection({ profile: profileData }: { profile: Profile }) {
+type Settings = {
+  showDownloadCvButton: boolean;
+  showGithubButton: boolean;
+  showEmailButton: boolean;
+  contactFormEnabled: boolean;
+};
+
+export function CtaSection({ profile: profileData, settings }: { profile: Profile; settings: Settings }) {
   const [isVisible, setIsVisible] = useState(false);
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -109,6 +116,7 @@ export function CtaSection({ profile: profileData }: { profile: Profile }) {
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
+                  {settings.showEmailButton ? (
                   <Button
                     asChild
                     size="lg"
@@ -119,6 +127,8 @@ export function CtaSection({ profile: profileData }: { profile: Profile }) {
                       <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </a>
                   </Button>
+                  ) : null}
+                  {settings.showGithubButton ? (
                   <Button
                     asChild
                     size="lg"
@@ -127,6 +137,8 @@ export function CtaSection({ profile: profileData }: { profile: Profile }) {
                   >
                     <a href={profileData.github}>View GitHub</a>
                   </Button>
+                  ) : null}
+                  {settings.showDownloadCvButton ? (
                   <Button
                     asChild
                     size="lg"
@@ -135,15 +147,17 @@ export function CtaSection({ profile: profileData }: { profile: Profile }) {
                   >
                     <a href={profileData.cv}>Download CV</a>
                   </Button>
+                  ) : null}
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-8 font-mono">
-                  {profileData.email} · {profileData.location}
+                  {[settings.showEmailButton ? profileData.email : null, profileData.location].filter(Boolean).join(" · ")}
                 </p>
               </div>
 
               {/* Right image */}
               <div className="lg:col-span-6">
+                {settings.contactFormEnabled ? (
                 <form
                   onSubmit={handleSubmit}
                   className="relative overflow-hidden border border-foreground/10 bg-foreground/[0.025] p-6 lg:p-8"
@@ -196,6 +210,14 @@ export function CtaSection({ profile: profileData }: { profile: Profile }) {
                     ) : null}
                   </div>
                 </form>
+                ) : (
+                  <div className="relative overflow-hidden border border-foreground/10 bg-foreground/[0.025] p-6 lg:p-8">
+                    <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#eca8d6]/10 blur-[70px]" />
+                    <p className="relative text-sm leading-6 text-muted-foreground">
+                      The contact form is currently disabled. Please use the available contact links.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

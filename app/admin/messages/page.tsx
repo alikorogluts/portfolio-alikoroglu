@@ -1,20 +1,20 @@
-import { Check, Inbox, Search, Trash2 } from "lucide-react";
+import { Archive, Check, Inbox, MailOpen, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-import { deleteMessage, markMessageRead } from "../actions";
+import { archiveMessage, deleteMessage, markMessageRead, markMessageUnread } from "../actions";
 import { AdminShell } from "../admin-shell";
-import { EmptyState, SectionCard, StatusBadge } from "../admin-ui";
+import { EmptyState, FieldDescription, SectionCard, StatusBadge } from "../admin-ui";
+import { AdminFeedback, ConfirmSubmitButton, SubmitButton } from "../form-controls";
+import { MessagesFilter } from "./messages-filter";
 
 type MessagesPageProps = {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; success?: string; error?: string }>;
 };
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("tr-TR", {
+  return new Intl.DateTimeFormat("en-US", {
     dateStyle: "short",
     timeStyle: "short",
   }).format(date);
@@ -22,12 +22,14 @@ function formatDate(date: Date) {
 
 export default async function AdminMessagesPage({ searchParams }: MessagesPageProps) {
   await requireAdmin();
-  const { q = "", status = "all" } = await searchParams;
+  const { q = "", status = "all", success, error } = await searchParams;
   const query = q.trim();
   const messages = await prisma.contactMessage.findMany({
     where: {
-      ...(status === "read" ? { isRead: true } : {}),
-      ...(status === "unread" ? { isRead: false } : {}),
+      ...(status === "read" ? { isRead: true, archivedAt: null } : {}),
+      ...(status === "unread" ? { isRead: false, archivedAt: null } : {}),
+      ...(status === "archived" ? { archivedAt: { not: null } } : {}),
+      ...(status === "all" || !status ? { archivedAt: null } : {}),
       ...(query
         ? {
             OR: [
@@ -44,30 +46,13 @@ export default async function AdminMessagesPage({ searchParams }: MessagesPagePr
 
   return (
     <AdminShell title="Messages" description="Manage messages submitted from the public contact form.">
+      <AdminFeedback message={success} />
+      <AdminFeedback message={error} type="error" />
       <SectionCard className="mb-5">
-        <form className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
-            <Input
-              name="q"
-              defaultValue={query}
-              placeholder="Ad, email, konu veya mesaj ara"
-              className="border-white/10 bg-black/30 pl-9 text-white placeholder:text-white/28"
-            />
-          </div>
-          <select
-            name="status"
-            defaultValue={status}
-            className="h-10 rounded-md border border-white/10 bg-black/30 px-3 text-sm text-white outline-none"
-          >
-            <option value="all">All</option>
-            <option value="unread">Unread</option>
-            <option value="read">Read</option>
-          </select>
-          <Button type="submit" className="bg-white text-black hover:bg-white/85">
-            Filter
-          </Button>
-        </form>
+        <MessagesFilter query={query} status={status} />
+        <FieldDescription className="mt-3">
+          Unread messages need attention, read messages stay in the inbox, and archived messages are hidden from the default view.
+        </FieldDescription>
       </SectionCard>
 
       <div className="grid gap-4">
@@ -85,7 +70,9 @@ export default async function AdminMessagesPage({ searchParams }: MessagesPagePr
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">
                   <h2 className="text-lg font-medium text-white">{message.subject}</h2>
-                  <StatusBadge tone={message.isRead ? "neutral" : "warning"}>{message.isRead ? "Read" : "New"}</StatusBadge>
+                  <StatusBadge tone={message.archivedAt ? "neutral" : message.isRead ? "neutral" : "warning"}>
+                    {message.archivedAt ? "Archived" : message.isRead ? "Read" : "New"}
+                  </StatusBadge>
                 </div>
                 <p className="mt-2 text-sm text-white/50">
                   {message.name} · {message.email} · {formatDate(message.createdAt)}
@@ -99,18 +86,36 @@ export default async function AdminMessagesPage({ searchParams }: MessagesPagePr
                 {!message.isRead ? (
                   <form action={markMessageRead}>
                     <input type="hidden" name="messageId" value={message.id} />
-                    <Button variant="outline" size="sm" className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
+                    <SubmitButton size="sm" pendingLabel="Marking..." className="border border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
                       <Check className="mr-2 h-4 w-4" />
                       Read
-                    </Button>
+                    </SubmitButton>
+                  </form>
+                ) : null}
+                {message.isRead ? (
+                  <form action={markMessageUnread}>
+                    <input type="hidden" name="messageId" value={message.id} />
+                    <SubmitButton size="sm" pendingLabel="Marking..." className="border border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
+                      <MailOpen className="mr-2 h-4 w-4" />
+                      Unread
+                    </SubmitButton>
+                  </form>
+                ) : null}
+                {!message.archivedAt ? (
+                  <form action={archiveMessage}>
+                    <input type="hidden" name="messageId" value={message.id} />
+                    <ConfirmSubmitButton size="sm" confirmLabel="Archive message" className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
+                      <Archive className="mr-2 h-4 w-4" />
+                      Archive
+                    </ConfirmSubmitButton>
                   </form>
                 ) : null}
                 <form action={deleteMessage}>
                   <input type="hidden" name="messageId" value={message.id} />
-                  <Button variant="outline" size="sm" className="border-red-400/20 bg-red-400/5 text-red-200 hover:bg-red-400/10 hover:text-red-100">
+                  <ConfirmSubmitButton size="sm" confirmLabel="Delete message">
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
-                  </Button>
+                  </ConfirmSubmitButton>
                 </form>
               </div>
             </div>

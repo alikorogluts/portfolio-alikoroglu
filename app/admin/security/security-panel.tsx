@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { AlertTriangle, KeyRound, QrCode, RefreshCcw, ShieldCheck, ShieldOff } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +51,7 @@ export function SecurityPanel({ twoFactorEnabled }: SecurityPanelProps) {
     setQrCode(result.qrCode);
     setManualCode(result.manualCode);
     setBackupCodes([]);
-    setStatus("QR kodu Google Authenticator ile okut.");
+    setStatus("Scan the QR code with Google Authenticator, then enter the verification code.");
     setIsBusy(false);
   }
 
@@ -101,7 +112,7 @@ export function SecurityPanel({ twoFactorEnabled }: SecurityPanelProps) {
               {twoFactorEnabled ? <ShieldCheck className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
             </span>
             <div>
-              <h2 className="text-lg font-medium">2FA Durumu</h2>
+              <h2 className="text-lg font-medium">2FA Status</h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-white/45">
                 {twoFactorEnabled
                   ? "Google Authenticator is active. Admin login requires TOTP or backup code after password."
@@ -117,26 +128,64 @@ export function SecurityPanel({ twoFactorEnabled }: SecurityPanelProps) {
             <QrCode className="mr-2 h-4 w-4" />
             Enable 2FA
           </Button>
-          <Button
-            type="button"
-            onClick={regenerateBackupCodes}
-            disabled={isBusy || !twoFactorEnabled}
-            variant="outline"
-            className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white"
-          >
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Regenerate Backup Codes
-          </Button>
-          <Button
-            type="button"
-            onClick={disableTwoFactor}
-            disabled={isBusy || !twoFactorEnabled}
-            variant="outline"
-            className="border-red-400/20 bg-red-400/5 text-red-200 hover:bg-red-400/10 hover:text-red-100"
-          >
-            <ShieldOff className="mr-2 h-4 w-4" />
-            Disable 2FA
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                disabled={isBusy || !twoFactorEnabled}
+                variant="outline"
+                className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white"
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" />
+                Regenerate Backup Codes
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="border-white/10 bg-[#070708] text-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-white/50">
+                  Regenerating backup codes invalidates all existing backup codes. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction className="bg-red-500 text-white hover:bg-red-400" onClick={regenerateBackupCodes}>
+                  Regenerate codes
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                disabled={isBusy || !twoFactorEnabled}
+                variant="outline"
+                className="border-red-400/20 bg-red-400/5 text-red-200 hover:bg-red-400/10 hover:text-red-100"
+              >
+                <ShieldOff className="mr-2 h-4 w-4" />
+                Disable 2FA
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="border-white/10 bg-[#070708] text-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-white/50">
+                  Disabling 2FA reduces admin account protection. This action cannot be undone automatically.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="border-white/10 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction className="bg-red-500 text-white hover:bg-red-400" onClick={disableTwoFactor}>
+                  Disable 2FA
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         {qrCode ? (

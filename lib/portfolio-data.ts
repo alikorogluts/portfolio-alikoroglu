@@ -10,8 +10,28 @@ import {
 } from "@/components/landing/portfolio-data";
 
 export type PublicProfile = typeof fallbackProfile;
-export type PublicProject = (typeof fallbackProjects)[number];
-export type PublicExperience = (typeof fallbackExperience)[number];
+export type PublicProject = (typeof fallbackProjects)[number] & {
+  slug?: string;
+  githubUrl?: string;
+  demoUrl?: string;
+  coverImageUrl?: string;
+  spotlightTitle?: string;
+  spotlightSubtitle?: string;
+  spotlightDescription?: string;
+  spotlightImageUrl?: string;
+  spotlightMetricLabel?: string;
+  spotlightMetricValue?: string;
+  sortOrder?: number;
+  isFeatured?: boolean;
+  isPublished?: boolean;
+  updatedAt?: string;
+};
+export type PublicExperience = (typeof fallbackExperience)[number] & {
+  company?: string;
+  role?: string;
+  dateRange?: string;
+  detail?: string;
+};
 export type PublicSkillGroup = (typeof fallbackSkillGroups)[number];
 export type PublicHighlight = (typeof fallbackHighlights)[number];
 export type PublicAward = (typeof fallbackAwards)[number];
@@ -25,6 +45,29 @@ export type PublicHero = {
   secondaryCtaLabel: string;
   secondaryCtaHref: string;
   currentBuilding: string;
+  backgroundImageUrl: string;
+};
+
+export type PublicSiteSettings = {
+  siteTitle: string;
+  siteDescription: string;
+  defaultLanguage: "en" | "tr";
+  maintenanceMode: boolean;
+  showAvailabilityBadge: boolean;
+  showDownloadCvButton: boolean;
+  showGithubButton: boolean;
+  showEmailButton: boolean;
+  contactFormEnabled: boolean;
+  contactRecipientEmail: string;
+  footerCopyrightText: string;
+  analyticsEnabled: boolean;
+  analyticsProvider: string;
+  analyticsId: string;
+  maintenanceTitle: string;
+  maintenanceDescription: string;
+  maintenanceExpectedBackAt: string;
+  maintenanceImageUrl: string;
+  ogImageUrl: string;
 };
 
 const fallbackHero: PublicHero = {
@@ -37,15 +80,71 @@ const fallbackHero: PublicHero = {
   secondaryCtaLabel: "View GitHub",
   secondaryCtaHref: fallbackProfile.github,
   currentBuilding: "DeepSecure",
+  backgroundImageUrl: "",
+};
+
+const fallbackSettings: PublicSiteSettings = {
+  siteTitle: "Ali Koroglu - Full-Stack & Mobile Developer",
+  siteDescription:
+    "Portfolio of Ali Koroglu, a computer engineering senior building .NET, Next.js, Flutter, and Python ML systems.",
+  defaultLanguage: "en",
+  maintenanceMode: false,
+  showAvailabilityBadge: true,
+  showDownloadCvButton: true,
+  showGithubButton: true,
+  showEmailButton: true,
+  contactFormEnabled: true,
+  contactRecipientEmail: fallbackProfile.email,
+  footerCopyrightText: `© ${new Date().getFullYear()} Ali Koroglu. Portfolio.`,
+  analyticsEnabled: false,
+  analyticsProvider: "",
+  analyticsId: "",
+  maintenanceTitle: "Portfolio updates in progress.",
+  maintenanceDescription: "The portfolio is temporarily unavailable while updates are being applied.",
+  maintenanceExpectedBackAt: "",
+  maintenanceImageUrl: "/images/maintenance-visual.png",
+  ogImageUrl: "",
 };
 
 async function getPrisma() {
-  const { prisma } = await import("@/lib/prisma");
-  return prisma;
+  const { prisma, readWithRetry } = await import("@/lib/prisma");
+  return { prisma, readWithRetry };
 }
 
 function logPortfolioFallback(source: string, error: unknown) {
   console.error(`[portfolio-data] Falling back to static ${source}.`, error);
+}
+
+function stringOrFallback(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function nullableString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function optionalString(value: unknown) {
+  const normalized = nullableString(value);
+  return normalized || undefined;
+}
+
+function stringArrayFromJson(value: unknown, fallback: string[] = []) {
+  if (!Array.isArray(value)) return fallback;
+  const items = value.map((item) => nullableString(item)).filter(Boolean);
+  return items.length > 0 ? items : fallback;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function metricFromJson(value: unknown, fallback: { value: string; label: string }) {
+  if (!isRecord(value)) return fallback;
+
+  return {
+    value: stringOrFallback(value.value, fallback.value),
+    label: stringOrFallback(value.label, fallback.label),
+  };
 }
 
 export type PortfolioDataDiagnostics = {
@@ -64,7 +163,7 @@ export async function getPortfolioDataDiagnostics(): Promise<PortfolioDataDiagno
   }
 
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const [profileCount, heroCount, publishedProjects, publishedExperience, publishedSkills, publishedHighlights] =
       await Promise.all([
         prisma.portfolioProfile.count(),
@@ -106,7 +205,7 @@ export async function getPortfolioDataDiagnostics(): Promise<PortfolioDataDiagno
 
 export async function getPortfolioProfile(): Promise<PublicProfile> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const profile = await prisma.portfolioProfile.findFirst({
       orderBy: { updatedAt: "desc" },
     });
@@ -116,19 +215,19 @@ export async function getPortfolioProfile(): Promise<PublicProfile> {
     }
 
     return {
-      name: profile.name,
-      role: profile.role,
-      subtitle: profile.subtitle ?? fallbackProfile.subtitle,
-      location: profile.location ?? fallbackProfile.location,
-      email: profile.email,
-      phone: profile.phone ?? fallbackProfile.phone,
-      github: profile.githubUrl ?? fallbackProfile.github,
-      linkedin: profile.linkedinUrl ?? fallbackProfile.linkedin,
-      grit: profile.websiteUrl ?? fallbackProfile.grit,
-      cv: profile.cvUrl ?? fallbackProfile.cv,
-      summary: profile.summary,
-      stackLine: profile.stackLine ?? fallbackProfile.stackLine,
-      availability: profile.availability ?? fallbackProfile.availability,
+      name: stringOrFallback(profile.name, fallbackProfile.name),
+      role: stringOrFallback(profile.role, fallbackProfile.role),
+      subtitle: stringOrFallback(profile.subtitle, fallbackProfile.subtitle),
+      location: stringOrFallback(profile.location, fallbackProfile.location),
+      email: stringOrFallback(profile.email, fallbackProfile.email),
+      phone: stringOrFallback(profile.phone, fallbackProfile.phone),
+      github: stringOrFallback(profile.githubUrl, fallbackProfile.github),
+      linkedin: stringOrFallback(profile.linkedinUrl, fallbackProfile.linkedin),
+      grit: stringOrFallback(profile.websiteUrl, fallbackProfile.grit),
+      cv: stringOrFallback(profile.cvUrl, fallbackProfile.cv),
+      summary: stringOrFallback(profile.summary, fallbackProfile.summary),
+      stackLine: stringOrFallback(profile.stackLine, fallbackProfile.stackLine),
+      availability: stringOrFallback(profile.availability, fallbackProfile.availability),
     };
   } catch (error) {
     logPortfolioFallback("profile", error);
@@ -136,9 +235,49 @@ export async function getPortfolioProfile(): Promise<PublicProfile> {
   }
 }
 
+export async function getSiteSettings(): Promise<PublicSiteSettings> {
+  try {
+    const { prisma, readWithRetry } = await getPrisma();
+    const settings = await readWithRetry(
+      () =>
+        prisma.siteSettings.findFirst({
+          orderBy: { updatedAt: "desc" },
+        }),
+      "site settings lookup",
+    );
+
+    if (!settings) return fallbackSettings;
+
+    return {
+      siteTitle: settings.siteTitle,
+      siteDescription: settings.siteDescription,
+      defaultLanguage: settings.defaultLanguage === "tr" ? "tr" : "en",
+      maintenanceMode: settings.maintenanceMode,
+      showAvailabilityBadge: settings.showAvailabilityBadge,
+      showDownloadCvButton: settings.showDownloadCvButton,
+      showGithubButton: settings.showGithubButton,
+      showEmailButton: settings.showEmailButton,
+      contactFormEnabled: settings.contactFormEnabled,
+      contactRecipientEmail: settings.contactRecipientEmail ?? fallbackProfile.email,
+      footerCopyrightText: settings.footerCopyrightText ?? fallbackSettings.footerCopyrightText,
+      analyticsEnabled: settings.analyticsEnabled,
+      analyticsProvider: settings.analyticsProvider ?? "",
+      analyticsId: settings.analyticsId ?? "",
+      maintenanceTitle: stringOrFallback(settings.maintenanceTitle, fallbackSettings.maintenanceTitle),
+      maintenanceDescription: stringOrFallback(settings.maintenanceDescription, fallbackSettings.maintenanceDescription),
+      maintenanceExpectedBackAt: nullableString(settings.maintenanceExpectedBackAt),
+      maintenanceImageUrl: stringOrFallback(settings.maintenanceImageUrl, fallbackSettings.maintenanceImageUrl),
+      ogImageUrl: nullableString(settings.ogImageUrl),
+    };
+  } catch (error) {
+    logPortfolioFallback("settings", error);
+    return fallbackSettings;
+  }
+}
+
 export async function getPortfolioHero(profile: PublicProfile = fallbackProfile): Promise<PublicHero> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const hero = await prisma.portfolioHero.findFirst({
       where: { isActive: true },
       orderBy: { updatedAt: "desc" },
@@ -154,20 +293,23 @@ export async function getPortfolioHero(profile: PublicProfile = fallbackProfile)
       };
     }
 
-    const animatedWords = Array.isArray(hero.animatedWords)
-      ? hero.animatedWords.filter((item): item is string => typeof item === "string")
-      : fallbackHero.animatedWords;
+    const animatedWords = stringArrayFromJson(hero.animatedWords, fallbackHero.animatedWords);
+    const primaryLabel = nullableString(hero.primaryCtaLabel);
+    const primaryHref = nullableString(hero.primaryCtaHref);
+    const secondaryLabel = nullableString(hero.secondaryCtaLabel);
+    const secondaryHref = nullableString(hero.secondaryCtaHref);
 
     return {
-      headlinePrefix: hero.headlinePrefix,
-      headlineTemplate: hero.headlineTemplate,
+      headlinePrefix: stringOrFallback(hero.headlinePrefix, profile.name),
+      headlineTemplate: stringOrFallback(hero.headlineTemplate, fallbackHero.headlineTemplate),
       animatedWords: animatedWords.length > 0 ? animatedWords : fallbackHero.animatedWords,
-      description: hero.description ?? `${profile.role} | ${profile.subtitle}. ${profile.summary}`,
-      primaryCtaLabel: hero.primaryCtaLabel ?? fallbackHero.primaryCtaLabel,
-      primaryCtaHref: hero.primaryCtaHref ?? `mailto:${profile.email}`,
-      secondaryCtaLabel: hero.secondaryCtaLabel ?? fallbackHero.secondaryCtaLabel,
-      secondaryCtaHref: hero.secondaryCtaHref ?? profile.github,
-      currentBuilding: hero.currentBuilding ?? fallbackHero.currentBuilding,
+      description: stringOrFallback(hero.description, `${profile.role} | ${profile.subtitle}. ${profile.summary}`),
+      primaryCtaLabel: primaryLabel && primaryHref ? primaryLabel : fallbackHero.primaryCtaLabel,
+      primaryCtaHref: primaryLabel && primaryHref ? primaryHref : `mailto:${profile.email}`,
+      secondaryCtaLabel: secondaryLabel && secondaryHref ? secondaryLabel : fallbackHero.secondaryCtaLabel,
+      secondaryCtaHref: secondaryLabel && secondaryHref ? secondaryHref : profile.github,
+      currentBuilding: stringOrFallback(hero.currentBuilding, fallbackHero.currentBuilding),
+      backgroundImageUrl: nullableString(hero.backgroundImageUrl),
     };
   } catch (error) {
     logPortfolioFallback("hero", error);
@@ -177,16 +319,17 @@ export async function getPortfolioHero(profile: PublicProfile = fallbackProfile)
       description: `${profile.role} | ${profile.subtitle}. ${profile.summary}`,
       primaryCtaHref: `mailto:${profile.email}`,
       secondaryCtaHref: profile.github,
+      backgroundImageUrl: "",
     };
   }
 }
 
 export async function getPortfolioProjects(): Promise<PublicProject[]> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const projects = await prisma.portfolioProject.findMany({
       where: { isPublished: true },
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
     });
 
     if (projects.length === 0) {
@@ -194,11 +337,25 @@ export async function getPortfolioProjects(): Promise<PublicProject[]> {
     }
 
     return projects.map((project) => ({
-      name: project.title,
-      label: project.label ?? "",
-      description: project.description,
-      stack: project.stack ?? "",
-      metric: project.metric ?? "",
+      name: stringOrFallback(project.title, "Untitled project"),
+      slug: optionalString(project.slug),
+      label: nullableString(project.label),
+      description: nullableString(project.description),
+      stack: nullableString(project.stack),
+      metric: nullableString(project.metric),
+      githubUrl: optionalString(project.githubUrl),
+      demoUrl: optionalString(project.demoUrl),
+      coverImageUrl: optionalString(project.coverImageUrl),
+      spotlightTitle: optionalString(project.spotlightTitle),
+      spotlightSubtitle: optionalString(project.spotlightSubtitle),
+      spotlightDescription: optionalString(project.spotlightDescription),
+      spotlightImageUrl: optionalString(project.spotlightImageUrl),
+      spotlightMetricLabel: optionalString(project.spotlightMetricLabel),
+      spotlightMetricValue: optionalString(project.spotlightMetricValue),
+      sortOrder: project.sortOrder,
+      isFeatured: project.isFeatured,
+      isPublished: project.isPublished,
+      updatedAt: project.updatedAt.toISOString(),
     }));
   } catch (error) {
     logPortfolioFallback("projects", error);
@@ -208,7 +365,7 @@ export async function getPortfolioProjects(): Promise<PublicProject[]> {
 
 export async function getPortfolioExperience(): Promise<PublicExperience[]> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const experience = await prisma.portfolioExperience.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -220,9 +377,13 @@ export async function getPortfolioExperience(): Promise<PublicExperience[]> {
 
     return experience.map((item, index) => ({
       number: String(index + 1).padStart(2, "0"),
-      title: item.company ?? item.title,
-      subtitle: item.subtitle ?? [item.role, item.dateRange].filter(Boolean).join(" · "),
-      description: item.description,
+      title: stringOrFallback(item.company, item.title),
+      subtitle: nullableString(item.title),
+      company: optionalString(item.company),
+      role: optionalString(item.role),
+      dateRange: optionalString(item.dateRange),
+      detail: optionalString(item.subtitle),
+      description: nullableString(item.description),
     }));
   } catch (error) {
     logPortfolioFallback("experience", error);
@@ -232,7 +393,7 @@ export async function getPortfolioExperience(): Promise<PublicExperience[]> {
 
 export async function getPortfolioSkills(): Promise<PublicSkillGroup[]> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const skillGroups = await prisma.portfolioSkillGroup.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -243,9 +404,9 @@ export async function getPortfolioSkills(): Promise<PublicSkillGroup[]> {
     }
 
     return skillGroups.map((group) => ({
-      name: group.name,
-      category: group.category ?? "",
-      items: Array.isArray(group.items) ? group.items.filter((item): item is string => typeof item === "string") : [],
+      name: stringOrFallback(group.name, "Skills"),
+      category: nullableString(group.category),
+      items: stringArrayFromJson(group.items),
     }));
   } catch (error) {
     logPortfolioFallback("skills", error);
@@ -255,7 +416,7 @@ export async function getPortfolioSkills(): Promise<PublicSkillGroup[]> {
 
 export async function getPortfolioHighlights(): Promise<PublicHighlight[]> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const highlights = await prisma.portfolioHighlight.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
@@ -266,9 +427,9 @@ export async function getPortfolioHighlights(): Promise<PublicHighlight[]> {
     }
 
     return highlights.map((highlight) => ({
-      value: highlight.value,
-      label: highlight.label,
-      sublabel: highlight.sublabel ?? "",
+      value: stringOrFallback(highlight.value, "0"),
+      label: stringOrFallback(highlight.label, "Highlight"),
+      sublabel: nullableString(highlight.sublabel),
     }));
   } catch (error) {
     logPortfolioFallback("highlights", error);
@@ -278,7 +439,7 @@ export async function getPortfolioHighlights(): Promise<PublicHighlight[]> {
 
 export async function getPortfolioAwards(): Promise<PublicAward[]> {
   try {
-    const prisma = await getPrisma();
+    const { prisma } = await getPrisma();
     const awards = await prisma.portfolioHighlight.findMany({
       where: {
         isPublished: true,
@@ -292,13 +453,13 @@ export async function getPortfolioAwards(): Promise<PublicAward[]> {
     }
 
     return awards.map((award) => ({
-      quote: award.quote ?? "",
-      title: award.title ?? award.label,
-      role: award.role ?? award.sublabel ?? "",
-      metric:
-        typeof award.metric === "object" && award.metric && !Array.isArray(award.metric) && "value" in award.metric && "label" in award.metric
-          ? (award.metric as { value: string; label: string })
-          : { value: award.value, label: award.label },
+      quote: nullableString(award.quote),
+      title: stringOrFallback(award.title, award.label),
+      role: stringOrFallback(award.role, nullableString(award.sublabel)),
+      metric: metricFromJson(award.metric, {
+        value: stringOrFallback(award.value, "0"),
+        label: stringOrFallback(award.label, "Highlight"),
+      }),
     }));
   } catch (error) {
     logPortfolioFallback("awards", error);
