@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AdminRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum LoginStatus {
+  SUCCESS
+  FAILED
+  TWO_FACTOR_REQUIRED
+  TWO_FACTOR_FAILED
+  LOCKED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  TWO_FACTOR_ENABLE
+  TWO_FACTOR_DISABLE
+  PUBLISH
+  UNPUBLISH
+}
+
+model AdminUser {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String?
+  passwordHash     String
+  role             AdminRole @default(EDITOR)
+  isActive         Boolean   @default(true)
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String?
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  sessions  AdminSession[]
+  loginLogs AdminLoginLog[]
+  auditLogs AdminAuditLog[]
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AdminLoginLog {
+  id        String      @id @default(cuid())
+  userId    String?
+  email     String
+  status    LoginStatus
+  ipAddress String?
+  userAgent String?
+  reason    String?
+  createdAt DateTime    @default(now())
+
+  user AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AdminAuditLog {
+  id         String      @id @default(cuid())
+  userId     String?
+  action     AuditAction
+  entityType String
+  entityId   String?
+  summary    String
+  beforeJson Json?
+  afterJson  Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime    @default(now())
+
+  user AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model PortfolioProfile {
+  id           String   @id @default(cuid())
+  name         String
+  role         String
+  subtitle     String?
+  location     String?
+  email        String
+  phone        String?
+  githubUrl    String?
+  linkedinUrl  String?
+  websiteUrl   String?
+  cvUrl        String?
+  summary      String
+  stackLine    String?
+  availability String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PortfolioProject {
+  id          String   @id @default(cuid())
+  title       String
+  label       String?
+  description String
+  stack       String?
+  metric      String?
+  sortOrder   Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isPublished])
+}
+
+model PortfolioExperience {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isPublished])
+}
+
+model PortfolioSkillGroup {
+  id          String   @id @default(cuid())
+  name        String
+  category    String?
+  items       Json
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isPublished])
+}
+
+model PortfolioHighlight {
+  id          String   @id @default(cuid())
+  value       String
+  label       String
+  sublabel    String?
+  quote       String?
+  title       String?
+  role        String?
+  metric      Json?
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isPublished])
+}
