@@ -6,13 +6,13 @@ The project demonstrates full-stack development, database design, authentication
 
 ## Live Demo / Links
 
-- Live Demo: https://your-domain.com
-- GitHub: https://github.com/alikorogluts
+- Live Demo: https://alikoroglu.vercel.app
+- GitHub: https://github.com/alikorogluts/portfolio-alikoroglu
 - LinkedIn: https://linkedin.com/in/alikorogluts
 
 ## Preview
 
-Screenshots are expected in `docs/screenshots/`. Placeholder references are included until real screenshots are added.
+Screenshots are stored in `docs/screenshots/`.
 
 | Public Portfolio | Admin Dashboard |
 | --- | --- |
@@ -179,7 +179,7 @@ prisma/
 public/
   uploads/              Local uploaded media files
 docs/
-  screenshots/          Screenshot placeholders for README previews
+  screenshots/          README preview screenshots
 ```
 
 ## Environment Variables
@@ -190,7 +190,7 @@ Create a local `.env` file from `.env.example` and set the required values. Do n
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
 AUTH_SECRET="replace-with-a-long-random-secret"
 TWO_FACTOR_ENCRYPTION_KEY="replace-with-32-byte-base64-key"
-NEXT_PUBLIC_SITE_URL="https://your-domain.com"
+NEXT_PUBLIC_SITE_URL="https://alikoroglu.vercel.app"
 NEXT_PUBLIC_UMAMI_SCRIPT_URL="https://analytics.example.com/script.js"
 ```
 
@@ -260,7 +260,7 @@ The build script runs `prisma generate` before `next build`, ensuring Prisma Cli
 
 - Vercel deployment is supported.
 - `DATABASE_URL`, `AUTH_SECRET`, and `TWO_FACTOR_ENCRYPTION_KEY` must be configured in Vercel environment variables.
-- `NEXT_PUBLIC_SITE_URL` should be set to the production domain, for example `https://your-domain.com`.
+- `NEXT_PUBLIC_SITE_URL` should be set to the production domain, for example `https://alikoroglu.vercel.app`.
 - Local `/public/uploads` storage is not persistent on Vercel serverless deployments.
 - Future recommended improvement: move uploaded media to Supabase Storage or an S3-compatible object storage provider.
 
