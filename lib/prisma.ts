@@ -14,14 +14,12 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is required to initialize Prisma Client.");
 }
 
-const pool =
-  globalForPrisma.prismaPgPool ??
-  new Pool({
-    connectionString,
-    max: 5,
-    idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 10_000,
-  });
+const pool = (globalForPrisma.prismaPgPool ??= new Pool({
+  connectionString,
+  max: 1,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 10_000,
+}));
 
 if (!globalForPrisma.prismaPgPoolErrorListenerAttached) {
   pool.on("error", (error) => {
@@ -33,17 +31,10 @@ if (!globalForPrisma.prismaPgPoolErrorListenerAttached) {
 const adapter = new PrismaPg(pool);
 
 export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  globalForPrisma.prisma ??= new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
-
-globalForPrisma.prismaPgPool = pool;
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
 
 export function isTransientDatabaseError(error: unknown) {
   const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code) : "";

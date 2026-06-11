@@ -261,6 +261,13 @@ The build script runs `prisma generate` before `next build`, ensuring Prisma Cli
 - Vercel deployment is supported.
 - `DATABASE_URL`, `AUTH_SECRET`, and `TWO_FACTOR_ENCRYPTION_KEY` must be configured in Vercel environment variables.
 - `NEXT_PUBLIC_SITE_URL` should be set to the production domain, for example `https://alikoroglu.vercel.app`.
+- For Supabase on Vercel serverless, use the Supabase transaction pooler in `DATABASE_URL` and keep the client-side pool small. `lib/prisma.ts` caches both `PrismaClient` and the `pg` pool globally, with `pg.Pool` limited to one connection per warm function instance.
+- Supabase transaction pooler URL example:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:6543/DATABASE?schema=public&pgbouncer=true&connection_limit=1&pool_timeout=20"
+```
+
 - Local `/public/uploads` storage is not persistent on Vercel serverless deployments.
 - Future recommended improvement: move uploaded media to Supabase Storage or an S3-compatible object storage provider.
 
