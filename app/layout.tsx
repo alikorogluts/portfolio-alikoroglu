@@ -1,6 +1,8 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { PortfolioAnalytics } from '@/components/analytics'
 import { getSiteSettings } from '@/lib/portfolio-data'
 import './globals.css'
@@ -39,6 +41,8 @@ export default async function RootLayout({
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         {children}
         <PortfolioAnalytics settings={settings} />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

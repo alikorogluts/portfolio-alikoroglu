@@ -261,6 +261,10 @@ The build script runs `prisma generate` before `next build`, ensuring Prisma Cli
 - Vercel deployment is supported.
 - `DATABASE_URL`, `AUTH_SECRET`, and `TWO_FACTOR_ENCRYPTION_KEY` must be configured in Vercel environment variables.
 - `NEXT_PUBLIC_SITE_URL` should be set to the production domain, for example `https://alikoroglu.vercel.app`.
+- Vercel Web Analytics must be enabled from Vercel Dashboard > project > Analytics.
+- Vercel Speed Insights must be enabled from Vercel Dashboard > project > Speed Insights.
+- After deployment, production visits will appear in the Vercel dashboard as data is collected.
+- Real Vercel dashboard analytics data should not be expected from localhost development sessions.
 - For Supabase on Vercel serverless, use the Supabase transaction pooler in `DATABASE_URL` and keep the client-side pool small. `lib/prisma.ts` caches both `PrismaClient` and the `pg` pool globally, with `pg.Pool` limited to one connection per warm function instance.
 - Supabase transaction pooler URL example:
 
