@@ -31,6 +31,8 @@ ai-artifacts/
 **/adapter_model.safetensors
 **/adapter_model.bin
 **/*.gguf
+services/local-llm/.venv/
+services/local-llm/**/__pycache__/
 
 # Logs
 *.log

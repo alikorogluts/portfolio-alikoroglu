@@ -1,0 +1,8 @@
+torch
+transformers
+peft==0.19.1
+accelerate
+safetensors
+fastapi
+uvicorn[standard]
+pydantic
