@@ -9,6 +9,8 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint .",
+    "assistant:generate": "node scripts/generate-portfolio-assistant-dataset.mjs",
+    "assistant:validate": "node scripts/validate-portfolio-assistant-dataset.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

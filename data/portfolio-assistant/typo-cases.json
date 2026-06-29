@@ -1,0 +1,322 @@
+[
+  {
+    "id": "typo-deepsecure-01",
+    "input": "depsecur ne işe yarıyo",
+    "normalizedIntent": "DeepSecure projesi ne işe yarıyor?",
+    "expectedEntity": "DeepSecure",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-deepsecure-02",
+    "input": "deepsecur ai vs real mi",
+    "normalizedIntent": "DeepSecure AI vs real projesi mi?",
+    "expectedEntity": "DeepSecure",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-deepsecure-03",
+    "input": "deep secure hangi teknolojilerle",
+    "normalizedIntent": "DeepSecure hangi teknolojilerle geliştirildi?",
+    "expectedEntity": "DeepSecure",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-deepfake-01",
+    "input": "dep fake projesi ne",
+    "normalizedIntent": "Deepfake detection projesi nedir?",
+    "expectedEntity": "DeepSecure",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "medium"
+  },
+  {
+    "id": "typo-nextjs-01",
+    "input": "nexjs kullaniyo mu",
+    "normalizedIntent": "Next.js kullanıyor mu?",
+    "expectedEntity": "Next.js",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-nextjs-02",
+    "input": "next js portfoyde varmi",
+    "normalizedIntent": "Next.js portföyde var mı?",
+    "expectedEntity": "Next.js",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-react-01",
+    "input": "react js deneyimi varmi",
+    "normalizedIntent": "React deneyimi var mı?",
+    "expectedEntity": "React",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-typescript-01",
+    "input": "type script kullaniyor mu",
+    "normalizedIntent": "TypeScript kullanıyor mu?",
+    "expectedEntity": "TypeScript",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-prisma-01",
+    "input": "prismaa ne icin",
+    "normalizedIntent": "Prisma ne için kullanılıyor?",
+    "expectedEntity": "Prisma",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-postgresql-01",
+    "input": "postgre sql veritabani mi",
+    "normalizedIntent": "PostgreSQL veritabanı mı?",
+    "expectedEntity": "PostgreSQL",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-supabase-01",
+    "input": "supabse nerede var",
+    "normalizedIntent": "Supabase nerede var?",
+    "expectedEntity": "Supabase",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-rabbitmq-01",
+    "input": "rabittmq ne ise yariyo",
+    "normalizedIntent": "RabbitMQ ne işe yarıyor?",
+    "expectedEntity": "RabbitMQ",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-rabbitmq-02",
+    "input": "rabbit mq hangi projede",
+    "normalizedIntent": "RabbitMQ hangi projede kullanılıyor?",
+    "expectedEntity": "RabbitMQ",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-signalr-01",
+    "input": "signal r gercek zamanli mi",
+    "normalizedIntent": "SignalR gerçek zamanlı iletişim için mi?",
+    "expectedEntity": "SignalR",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-flutter-01",
+    "input": "fluter mobilde var mi",
+    "normalizedIntent": "Flutter mobil geliştirmede var mı?",
+    "expectedEntity": "Flutter",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-python-01",
+    "input": "pyhton ml icin mi",
+    "normalizedIntent": "Python ML için mi kullanılıyor?",
+    "expectedEntity": "Python",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-qwen-01",
+    "input": "qwen3 icin dataset mi",
+    "normalizedIntent": "Qwen3 için dataset mi?",
+    "expectedEntity": "Qwen",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-qlora-01",
+    "input": "q lora egitimi mi",
+    "normalizedIntent": "QLoRA eğitimi mi?",
+    "expectedEntity": "QLoRA",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-vercel-01",
+    "input": "vercelde analitics varmı",
+    "normalizedIntent": "Vercel Analytics var mı?",
+    "expectedEntity": "Vercel",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-vercel-02",
+    "input": "speed insight eklendimi",
+    "normalizedIntent": "Speed Insights eklendi mi?",
+    "expectedEntity": "Vercel",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "medium"
+  },
+  {
+    "id": "typo-docker-01",
+    "input": "doker biliyo mu",
+    "normalizedIntent": "Docker biliyor mu?",
+    "expectedEntity": "Docker",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-gradcam-01",
+    "input": "grad cam deepsecureda var mi",
+    "normalizedIntent": "GradCAM DeepSecure'da var mı?",
+    "expectedEntity": "GradCAM",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-opencv-01",
+    "input": "open cv teknofestte mi",
+    "normalizedIntent": "OpenCV Teknofest projesinde mi?",
+    "expectedEntity": "OpenCV",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-contact-01",
+    "input": "iletisim formu calisiyor mu",
+    "normalizedIntent": "İletişim formu çalışıyor mu?",
+    "expectedEntity": null,
+    "expectedCategory": "contact",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-contact-02",
+    "input": "siteye mesaj atnca nereye gidiyo",
+    "normalizedIntent": "Siteye mesaj atınca nereye gidiyor?",
+    "expectedEntity": null,
+    "expectedCategory": "contact",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-profile-01",
+    "input": "ali knu ne iş yapar",
+    "normalizedIntent": "Ali kim, ne iş yapar?",
+    "expectedEntity": null,
+    "expectedCategory": "identity",
+    "confidenceExpectation": "medium"
+  },
+  {
+    "id": "typo-profile-02",
+    "input": "ali gelistirici mi",
+    "normalizedIntent": "Ali geliştirici mi?",
+    "expectedEntity": null,
+    "expectedCategory": "identity",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-profile-03",
+    "input": "ali suan calisiyor mu",
+    "normalizedIntent": "Ali şu an çalışıyor mu?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-cms-01",
+    "input": "cms icerigi nerden geliyo",
+    "normalizedIntent": "CMS içeriği nereden geliyor?",
+    "expectedEntity": null,
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-admin-01",
+    "input": "admin panelde neler var",
+    "normalizedIntent": "Admin panelinde neler var?",
+    "expectedEntity": null,
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-attendance-01",
+    "input": "attendance tracking mobilmi",
+    "normalizedIntent": "Attendance Tracking System mobil mi?",
+    "expectedEntity": "Attendance Tracking System",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-habit-01",
+    "input": "habit tracker kac kullanici",
+    "normalizedIntent": "Habit Tracker kaç kullanıcıya ulaştı?",
+    "expectedEntity": "Habit Tracker",
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-teknofest-01",
+    "input": "teknofest kacıncı oldu",
+    "normalizedIntent": "Teknofest projesi kaçıncı oldu?",
+    "expectedEntity": "Teknofest 2024",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-grit-01",
+    "input": "grit sitesi kvkk uyumlu mu",
+    "normalizedIntent": "GRIT Corporate Website KVKK uyumlu mu?",
+    "expectedEntity": "GRIT Corporate Website",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "typo-supabase-negative-01",
+    "input": "superbase diye bir sey var mi",
+    "normalizedIntent": "Superbase diye bir şey var mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  },
+  {
+    "id": "typo-qwen-negative-01",
+    "input": "queen modeli kullanildi mi",
+    "normalizedIntent": "Queen modeli kullanıldı mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  },
+  {
+    "id": "typo-prisma-negative-01",
+    "input": "prismacolor projede var mi",
+    "normalizedIntent": "Prismacolor projede var mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  },
+  {
+    "id": "typo-vercel-negative-01",
+    "input": "versace analytics var mi",
+    "normalizedIntent": "Versace analytics var mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  },
+  {
+    "id": "typo-rabbitmq-negative-01",
+    "input": "rabbit oyun projesi var mi",
+    "normalizedIntent": "Rabbit oyun projesi var mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  },
+  {
+    "id": "typo-docker-negative-01",
+    "input": "dock yard projesi var mi",
+    "normalizedIntent": "Dock yard projesi var mı?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
+  }
+]

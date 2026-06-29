@@ -6,8 +6,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const outDir = join(root, "data", "portfolio-assistant");
 
-const systemPrompt =
-  "Sen Ali Köroğlu'nun kişisel web sitesi asistanısın. Türkçe, kısa, güvenilir ve teknik doğruluğu koruyan cevaplar ver. Sitede doğrulanmayan bilgileri uydurma. Bilmediğin konularda bunu açıkça belirt. Kullanıcıya uygun olduğunda ilgili sayfaya yönlendirme öner.";
+function readSystemPrompt() {
+  const source = readFileSync(join(root, "lib", "ai", "assistant-system-prompt.ts"), "utf8");
+  const match = source.match(/PORTFOLIO_ASSISTANT_SYSTEM_PROMPT\s*=\s*\[([\s\S]*?)\]\.join\(" "\)/);
+
+  if (!match) {
+    throw new Error("Could not read PORTFOLIO_ASSISTANT_SYSTEM_PROMPT from lib/ai/assistant-system-prompt.ts");
+  }
+
+  return [...match[1].matchAll(/"([^"]+)"/g)].map((item) => item[1]).join(" ");
+}
+
+const systemPrompt = readSystemPrompt();
 
 const rows = `
 Kimlik	Bu asistan ne yapar?	Ali Köroğlu'nun portföy sitesindeki doğrulanabilir içerikler hakkında kısa ve güvenilir cevaplar veririm. Bilmediğim veya sitede bulunmayan bilgileri uydurmam.
@@ -243,6 +253,9 @@ Bu klasör, Ali Koroglu portföy sitesi için ileride Qwen3-4B-Instruct üzerind
 - \`train.jsonl\`: ${trainCount} eğitim örneği
 - \`eval.jsonl\`: ${evalCount} değerlendirme örneği
 - \`test_prompts.json\`: ${testPrompts.length} manuel/regresyon test promptu
+- \`dataset-manifest.json\`: Sürüm, hedef model, sayılar ve runtime policy
+- \`evaluation-cases.json\`: Eğitim dışı davranış değerlendirme vakaları
+- \`typo-cases.json\`: Eğitim dışı typo ve alias regresyon vakaları
 - \`source-map.md\`: Veri kategorilerinin repo kaynakları ve özellikle eklenmeyen bilgiler
 
 ## Format
@@ -255,7 +268,8 @@ ${categories.map((category) => `- ${category}`).join("\n")}
 
 ## Doğrulama Sonucu
 
-Son üretim/doğrulama komutu: \`node scripts/generate-portfolio-assistant-dataset.mjs\`
+Son üretim komutu: \`pnpm assistant:generate\`
+Son sadece doğrulama komutu: \`pnpm assistant:validate\`
 
 - train.jsonl: geçti, ${trainCount} geçerli kayıt
 - eval.jsonl: geçti, ${evalCount} geçerli kayıt
@@ -267,6 +281,15 @@ Son üretim/doğrulama komutu: \`node scripts/generate-portfolio-assistant-datas
 ## Gizlilik Notları
 
 Veri seti telefon, şifre, API key, environment variable değeri, özel bağlantı veya kullanıcı mesajı içermez. İletişim isteyen örnekler doğrudan kişisel bilgi vermek yerine sitenin Contact bölümüne yönlendirme davranışını öğretir.
+
+## Runtime ve Kalite Notları
+
+- Bu dataset fine-tuning davranışı, güvenli ton ve portföy asistanı sınırları içindir; güncel proje, blog, CMS ve iletişim bilgileri runtime retrieval bağlamından gelmelidir.
+- \`evaluation-cases.json\` ve \`typo-cases.json\` eğitim verisi değildir; eğitim öncesi/sonrası kalite kontrol ve regresyon dosyalarıdır.
+- Zemberek şu an projeye eklenmedi.
+- İlk sürümde güvenli normalization ve alias eşleştirme yaklaşımı kullanılır.
+- İleride fuzzy retrieval, PostgreSQL \`pg_trgm\` veya benzeri arama iyileştirmeleri eklenebilir.
+- \`PORTFOLIO_ASSISTANT_SYSTEM_PROMPT\` değişirse dataset davranışı değişebileceği için yeni bir dataset sürümü, örneğin v2, değerlendirilmelidir.
 `,
 );
 

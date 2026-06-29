@@ -1,0 +1,14 @@
+{
+  "datasetName": "portfolio-assistant",
+  "version": "v1",
+  "baseModelTarget": "Qwen/Qwen3-4B-Instruct-2507",
+  "trainingMethod": "QLoRA",
+  "trainExamples": 80,
+  "evalExamples": 20,
+  "testPrompts": 35,
+  "language": "tr",
+  "purpose": "Portfolio assistant behavior fine-tuning and regression testing",
+  "dynamicFactsPolicy": "Current project, skill, blog, contact and CMS information must be retrieved at runtime; they must not be treated as permanently memorized model facts.",
+  "createdFromRepository": true,
+  "createdAt": "2026-06-29"
+}
