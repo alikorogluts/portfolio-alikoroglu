@@ -240,6 +240,29 @@ Optional seed command:
 pnpm db:seed
 ```
 
+### Local Portfolio Assistant Smoke UI
+
+The floating assistant chat is available only in `development`. It uses the existing runtime retrieval endpoint and the MacBook-local FastAPI model service; it is not a production chat API.
+
+Terminal 1:
+
+```bash
+pnpm dev
+```
+
+Terminal 2:
+
+```bash
+source services/local-llm/.venv/bin/activate
+PYTORCH_ENABLE_MPS_FALLBACK=1 pnpm local-llm:serve
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
 ## Production Build
 
 Build the application:

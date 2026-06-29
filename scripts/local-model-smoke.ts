@@ -91,3 +91,5 @@ run().catch((error) => {
   console.error("2. PYTORCH_ENABLE_MPS_FALLBACK=1 pnpm local-llm:serve");
   process.exitCode = 1;
 });
+
+export {};

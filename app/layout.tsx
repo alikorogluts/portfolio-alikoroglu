@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { AssistantChatWidget } from '@/components/assistant/AssistantChatWidget'
 import { PortfolioAnalytics } from '@/components/analytics'
 import { getSiteSettings } from '@/lib/portfolio-data'
 import './globals.css'
@@ -43,6 +44,7 @@ export default async function RootLayout({
         <PortfolioAnalytics settings={settings} />
         <Analytics />
         <SpeedInsights />
+        {process.env.NODE_ENV === "development" ? <AssistantChatWidget /> : null}
       </body>
     </html>
   )

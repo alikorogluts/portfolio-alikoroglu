@@ -14,6 +14,8 @@ const config = [
   globalIgnores([
     ".next/**",
     "node_modules/**",
+    "services/local-llm/.venv/**",
+    "services/local-llm/**/__pycache__/**",
     "data/portfolio-assistant/*.jsonl",
     "data/portfolio-assistant/test_prompts.json",
     "next-env.d.ts",

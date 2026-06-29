@@ -78,3 +78,5 @@ run().catch((error) => {
   console.error(`Make sure the dev server is running at ${BASE_URL} before running this smoke test.`);
   process.exitCode = 1;
 });
+
+export {};
