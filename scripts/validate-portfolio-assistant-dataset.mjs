@@ -94,6 +94,84 @@ function validateNearDuplicates(trainRecords, evalRecords) {
   }
 }
 
+function looksEnglish(text) {
+  const normalized = text.toLocaleLowerCase("en");
+  const englishSignals = [
+    "the",
+    "and",
+    "is",
+    "are",
+    "can",
+    "cannot",
+    "does",
+    "what",
+    "how",
+    "where",
+    "give",
+    "me",
+    "this",
+    "limited",
+    "should",
+    "not",
+    "repository",
+    "portfolio",
+    "contact",
+  ];
+  const turkishSignals = [" ş", " ğ", " ü", " ç", " ö", "ı", "değil", "için", "kullanıcı", "gizli", "paylaş"];
+  return englishSignals.some((signal) => normalized.includes(signal)) && !turkishSignals.some((signal) => normalized.includes(signal));
+}
+
+function looksTurkish(text) {
+  const normalized = text.toLocaleLowerCase("tr");
+  const turkishSignals = [
+    "repo",
+    "portföy",
+    "için",
+    "kullan",
+    "gizli",
+    "bilgi",
+    "proje",
+    "site",
+    "değil",
+    "yer al",
+    "olarak",
+    "ile",
+    "ve",
+    "var",
+    "yok",
+    "geçiyor",
+    "özet",
+    "tanıtılıyor",
+  ];
+  return turkishSignals.some((signal) => normalized.includes(signal));
+}
+
+function validateLanguageLayout(trainRecords, evalRecords) {
+  const trainTurkish = trainRecords.slice(0, 80);
+  const trainEnglish = trainRecords.slice(80);
+  const evalTurkish = evalRecords.slice(0, 20);
+  const evalEnglish = evalRecords.slice(20);
+
+  if (trainRecords.length !== 105 || trainTurkish.length !== 80 || trainEnglish.length !== 25) {
+    throw new Error("train.jsonl must contain 80 Turkish and 25 English examples");
+  }
+  if (evalRecords.length !== 28 || evalTurkish.length !== 20 || evalEnglish.length !== 8) {
+    throw new Error("eval.jsonl must contain 20 Turkish and 8 English examples");
+  }
+
+  for (const record of [...trainTurkish, ...evalTurkish]) {
+    if (!looksTurkish(record.assistant)) {
+      throw new Error(`${record.fileName}:${record.line} assistant answer does not look Turkish`);
+    }
+  }
+
+  for (const record of [...trainEnglish, ...evalEnglish]) {
+    if (!looksEnglish(record.user) || !looksEnglish(record.assistant)) {
+      throw new Error(`${record.fileName}:${record.line} English user/assistant language check failed`);
+    }
+  }
+}
+
 function validateStringArray(value, fileName, fieldName, minLength = 1) {
   if (!Array.isArray(value) || value.length < minLength || value.some((item) => typeof item !== "string" || !item.trim())) {
     throw new Error(`${fileName} has invalid ${fieldName}`);
@@ -118,8 +196,8 @@ function validateEvaluationCases() {
   const seenIds = new Set();
   const categories = new Set();
 
-  if (!Array.isArray(cases) || cases.length < 45) {
-    throw new Error("evaluation-cases.json must contain at least 45 cases");
+  if (!Array.isArray(cases) || cases.length < 55) {
+    throw new Error("evaluation-cases.json must contain at least 55 cases");
   }
 
   for (const item of cases) {
@@ -150,8 +228,8 @@ function validateTypoCases() {
   const confidenceValues = new Set(["high", "medium", "low"]);
   const seenIds = new Set();
 
-  if (!Array.isArray(cases) || cases.length < 40) {
-    throw new Error("typo-cases.json must contain at least 40 cases");
+  if (!Array.isArray(cases) || cases.length < 48) {
+    throw new Error("typo-cases.json must contain at least 48 cases");
   }
 
   for (const item of cases) {
@@ -184,7 +262,7 @@ function validateManifest(trainCount, evalCount, testPromptCount) {
     trainExamples: trainCount,
     evalExamples: evalCount,
     testPrompts: testPromptCount,
-    language: "tr",
+    language: "tr-en",
     createdFromRepository: true,
   };
 
@@ -197,10 +275,14 @@ function validateManifest(trainCount, evalCount, testPromptCount) {
   if (typeof manifest.dynamicFactsPolicy !== "string" || !manifest.dynamicFactsPolicy.trim()) {
     throw new Error("dataset-manifest.json missing dynamicFactsPolicy");
   }
+  if (typeof manifest.languagePolicy !== "string" || !manifest.languagePolicy.includes("English")) {
+    throw new Error("dataset-manifest.json missing bilingual languagePolicy");
+  }
 }
 
 const trainRecords = validateJsonl("train.jsonl");
 const evalRecords = validateJsonl("eval.jsonl");
+validateLanguageLayout(trainRecords, evalRecords);
 validateDuplicates([...trainRecords, ...evalRecords]);
 validateNearDuplicates(trainRecords, evalRecords);
 
@@ -216,6 +298,8 @@ validateManifest(trainRecords.length, evalRecords.length, testPrompts.prompts.le
 console.log("Portfolio assistant dataset validation passed.");
 console.log(`trainExamples=${trainRecords.length}`);
 console.log(`evalExamples=${evalRecords.length}`);
+console.log("trainLanguageSplit=tr:80,en:25");
+console.log("evalLanguageSplit=tr:20,en:8");
 console.log(`testPrompts=${testPrompts.prompts.length}`);
 console.log(`evaluationCases=${evaluationCount}`);
 console.log(`typoCases=${typoCount}`);

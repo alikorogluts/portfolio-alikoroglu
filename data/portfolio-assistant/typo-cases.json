@@ -318,5 +318,69 @@
     "expectedEntity": null,
     "expectedCategory": "unknown",
     "confidenceExpectation": "low"
+  },
+  {
+    "id": "en-typo-deepsecure-01",
+    "input": "what does deepsecur do",
+    "normalizedIntent": "What does DeepSecure do?",
+    "expectedEntity": "DeepSecure",
+    "expectedCategory": "projects",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-nextjs-01",
+    "input": "is nexjs used in this portfolio",
+    "normalizedIntent": "Is Next.js used in this portfolio?",
+    "expectedEntity": "Next.js",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-prisma-01",
+    "input": "what is prismaa for",
+    "normalizedIntent": "What is Prisma for?",
+    "expectedEntity": "Prisma",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-rabbitmq-01",
+    "input": "where is rabittmq used",
+    "normalizedIntent": "Where is RabbitMQ used?",
+    "expectedEntity": "RabbitMQ",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-supabase-01",
+    "input": "does supabse exist here",
+    "normalizedIntent": "Does Supabase exist here?",
+    "expectedEntity": "Supabase",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-qlora-01",
+    "input": "is qlora used for training",
+    "normalizedIntent": "Is QLoRA used for training?",
+    "expectedEntity": "QLoRA",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-vercel-analytics-01",
+    "input": "is vercel analitics enabled",
+    "normalizedIntent": "Is Vercel Analytics enabled?",
+    "expectedEntity": "Vercel",
+    "expectedCategory": "technical",
+    "confidenceExpectation": "high"
+  },
+  {
+    "id": "en-typo-vercel-negative-01",
+    "input": "is versace analytics enabled",
+    "normalizedIntent": "Is Versace analytics enabled?",
+    "expectedEntity": null,
+    "expectedCategory": "unknown",
+    "confidenceExpectation": "low"
   }
 ]
