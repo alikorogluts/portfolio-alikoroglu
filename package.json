@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "assistant:generate": "node scripts/generate-portfolio-assistant-dataset.mjs",
     "assistant:validate": "node scripts/validate-portfolio-assistant-dataset.mjs",
+    "assistant:context:smoke": "tsx scripts/assistant-context-smoke.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

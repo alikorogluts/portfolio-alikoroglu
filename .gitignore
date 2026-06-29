@@ -25,6 +25,13 @@ build/
 coverage/
 tsconfig.tsbuildinfo
 
+# Local AI experiment artifacts
+.local-ai/
+ai-artifacts/
+**/adapter_model.safetensors
+**/adapter_model.bin
+**/*.gguf
+
 # Logs
 *.log
 npm-debug.log*
