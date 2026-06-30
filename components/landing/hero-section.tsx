@@ -159,7 +159,7 @@ export function HeroSection({
   }, []);
 
   return (
-    <section id="profile" className="relative min-h-screen flex flex-col justify-center items-start overflow-hidden bg-black">
+    <section id="profile" className="relative min-h-screen flex flex-col justify-center items-start overflow-hidden bg-black max-sm:min-h-[106dvh]">
       {/* Background video */}
       <div className="absolute inset-0 z-0">
         {hero?.backgroundImageUrl ? (
@@ -279,7 +279,7 @@ export function HeroSection({
       
       {/* Stats — 3 metrics static, no auto-scroll */}
       <div 
-        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 max-sm:bottom-3 ${
+        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 md:bottom-20 lg:bottom-24 max-sm:bottom-7 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
