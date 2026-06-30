@@ -38,12 +38,12 @@ export function DevelopersSection() {
   }, []);
 
   return (
-    <section id="developers" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden max-sm:py-20">
+    <section id="developers" ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
 
       {/* Image — absolute, bottom-right, behind all content */}
       <div
-        className={`absolute bottom-0 right-0 w-[55%] h-[85%] pointer-events-none transition-all duration-1000 delay-300 max-sm:w-full max-sm:h-[48%] ${
-          isVisible ? "opacity-100 max-sm:opacity-25" : "opacity-0"
+        className={`absolute bottom-0 right-0 w-[55%] h-[85%] pointer-events-none transition-all duration-1000 delay-300 ${
+          isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
         <img
@@ -70,7 +70,7 @@ export function DevelopersSection() {
             <span className="w-8 h-px bg-foreground/30" />
             Profile depth
           </span>
-          <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] max-sm:text-[clamp(3rem,15vw,4.25rem)]">
+          <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
             Computer engineering.
             <br />
             <span className="text-muted-foreground">Applied in code.</span>
@@ -79,14 +79,14 @@ export function DevelopersSection() {
 
         {/* Description + Features — left half only */}
         <div
-          className={`max-w-[50%] transition-all duration-700 delay-100 max-sm:max-w-full ${
+          className={`max-w-[50%] transition-all duration-700 delay-100 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md max-sm:max-w-full max-sm:text-lg max-sm:leading-8 max-sm:mb-10">
+          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
             Academic foundation paired with production internships, freelance delivery, and project work across distributed systems, ML, and mobile apps.
           </p>
-          <div className="grid grid-cols-2 gap-6 max-sm:grid-cols-1 max-sm:gap-5">
+          <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (
               <div
                 key={feature.title}
@@ -95,8 +95,8 @@ export function DevelopersSection() {
                 }`}
                 style={{ transitionDelay: `${index * 50 + 200}ms` }}
               >
-                <h3 className="font-medium mb-1 max-sm:text-base">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground max-sm:max-w-[28rem] max-sm:leading-6">{feature.description}</p>
+                <h3 className="font-medium mb-1">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>

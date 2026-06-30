@@ -207,7 +207,7 @@ export function HeroSection({
         ))}
       </div>
       
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 py-32 lg:px-12 lg:py-40 max-sm:py-28 max-sm:pb-10">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 lg:px-12 py-32 lg:py-40">
         <div className="max-w-5xl lg:max-w-[68%]">
         {/* Eyebrow */}
         {settings.showAvailabilityBadge ? (
@@ -247,17 +247,17 @@ export function HeroSection({
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >
-          <p className="text-xl lg:text-2xl text-white/70 leading-relaxed mb-5 max-sm:text-lg max-sm:leading-8">
+          <p className="text-xl lg:text-2xl text-white/70 leading-relaxed mb-5">
             {hero?.description ?? `${profileData.role} | ${profileData.subtitle}. ${profileData.summary}`}
           </p>
-          <p className="text-sm font-mono text-white/50 leading-relaxed max-sm:text-xs max-sm:leading-6">
+          <p className="text-sm font-mono text-white/50 leading-relaxed">
             {profileData.stackLine}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center max-sm:mt-6">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               asChild
               size="lg"
-              className="h-14 rounded-full border border-white/15 bg-white/[0.08] px-8 text-base text-white hover:bg-white/[0.12] max-sm:w-full max-sm:justify-center"
+              className="h-14 rounded-full border border-white/15 bg-white/[0.08] px-8 text-base text-white hover:bg-white/[0.12]"
             >
               <a href={hero?.primaryCtaHref ?? "#contact"}>
                 {hero?.primaryCtaLabel ?? "Email me"}
@@ -268,7 +268,7 @@ export function HeroSection({
               asChild
               size="lg"
               variant="outline"
-              className="h-14 rounded-full border-white/15 bg-white/[0.02] px-8 text-base text-white hover:bg-white/[0.08] hover:text-white max-sm:w-full max-sm:justify-center"
+              className="h-14 rounded-full border-white/15 bg-white/[0.02] px-8 text-base text-white hover:bg-white/[0.08] hover:text-white"
             >
               <a href={hero?.secondaryCtaHref ?? "#projects"}>{hero?.secondaryCtaLabel ?? "View GitHub"}</a>
             </Button>
@@ -279,19 +279,19 @@ export function HeroSection({
       
       {/* Stats — 3 metrics static, no auto-scroll */}
       <div 
-        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 max-sm:static max-sm:px-6 max-sm:pb-8 ${
+        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 max-sm:bottom-3 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="max-w-[1400px] mx-auto flex flex-wrap items-start gap-8 lg:gap-20 max-sm:grid max-sm:grid-cols-2 max-sm:gap-4">
+        <div className="max-w-[1400px] mx-auto flex flex-wrap items-start gap-8 lg:gap-20 max-sm:gap-x-8 max-sm:gap-y-4">
           {[
             { value: hero?.currentBuilding ?? "DeepSecure", label: "currently building" },
             { value: "6th", label: "Teknofest 2024 in Turkey" },
             { value: "2", label: "industry internships" },
           ].map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-2 min-w-0">
-              <span className="text-3xl lg:text-4xl font-display text-white break-words max-sm:text-2xl max-sm:leading-none">{stat.value}</span>
-              <span className="text-xs text-white/50 leading-tight max-sm:text-[11px]">
+            <div key={stat.label} className="flex flex-col gap-2">
+              <span className="text-3xl lg:text-4xl font-display text-white break-words max-sm:text-2xl">{stat.value}</span>
+              <span className="text-xs text-white/50 leading-tight">
                 {stat.label}
               </span>
             </div>
