@@ -159,7 +159,7 @@ export function HeroSection({
   }, []);
 
   return (
-    <section id="profile" className="relative min-h-screen flex flex-col justify-center items-start overflow-hidden bg-black max-sm:min-h-[106dvh]">
+    <section id="profile" className="relative min-h-screen flex flex-col justify-center items-start overflow-hidden bg-black">
       {/* Background video */}
       <div className="absolute inset-0 z-0">
         {hero?.backgroundImageUrl ? (
@@ -279,18 +279,18 @@ export function HeroSection({
       
       {/* Stats — 3 metrics static, no auto-scroll */}
       <div 
-        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 md:bottom-20 lg:bottom-24 max-sm:bottom-7 ${
+        className={`absolute bottom-12 left-0 right-0 px-6 lg:px-12 transition-all duration-700 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="max-w-[1400px] mx-auto flex flex-wrap items-start gap-8 lg:gap-20 max-sm:gap-x-8 max-sm:gap-y-4">
+        <div className="max-w-[1400px] mx-auto flex flex-wrap items-start gap-8 lg:gap-20">
           {[
             { value: hero?.currentBuilding ?? "DeepSecure", label: "currently building" },
             { value: "6th", label: "Teknofest 2024 in Turkey" },
             { value: "2", label: "industry internships" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
-              <span className="text-3xl lg:text-4xl font-display text-white break-words max-sm:text-2xl">{stat.value}</span>
+              <span className="text-3xl lg:text-4xl font-display text-white break-words">{stat.value}</span>
               <span className="text-xs text-white/50 leading-tight">
                 {stat.label}
               </span>
