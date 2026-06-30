@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, KeyboardEvent, RefObject } from "react";
-import { Loader2, Send, X } from "lucide-react";
+import { Bot, Loader2, Send, X } from "lucide-react";
 
 import type { AssistantChatMessage } from "./assistant-chat.types";
 
@@ -115,9 +115,18 @@ export function AssistantChatPanel({
             ))}
             {isLoading ? (
               <div className="flex justify-start">
-                <div className="inline-flex items-center gap-2 rounded-2xl rounded-bl-md border border-white/10 bg-white/[0.05] px-3.5 py-2.5 text-sm text-foreground/72">
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Cevap hazırlanıyor
+                <div className="flex max-w-[86%] items-center gap-3 rounded-2xl rounded-bl-md border border-white/10 bg-white/[0.055] px-3.5 py-3 text-sm text-foreground/78 shadow-lg shadow-black/10">
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-foreground text-background">
+                    <Bot className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="text-[13px] font-medium text-foreground/86">Assistant düşünüyor</span>
+                    <span className="flex h-3 items-center gap-1" aria-hidden="true">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-foreground/45" />
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-foreground/45 [animation-delay:140ms]" />
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-foreground/45 [animation-delay:280ms]" />
+                    </span>
+                  </span>
                 </div>
               </div>
             ) : null}
